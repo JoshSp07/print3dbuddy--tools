@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Create Account{% endblock %}
+{% block content %}
+<div style="max-width:420px; margin:0 auto;">
+  <h1 style="font-size:1.6rem; margin-bottom:8px;">Create a free account</h1>
+  <p style="color:var(--muted); margin-bottom:28px;">Get 3 free uses across all tools. No credit card required.</p>
+
+  <form method="POST">
+    <label for="email">Email address</label>
+    <input type="email" id="email" name="email" required placeholder="you@example.com">
+
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" required placeholder="At least 6 characters" minlength="6">
+
+    <button type="submit" class="btn" style="width:100%;">Create account</button>
+  </form>
+
+  <p style="text-align:center; margin-top:20px; color:var(--muted); font-size:0.9rem;">
+    Already have an account? <a href="/login">Log in</a>
+  </p>
+</div>
+{% endblock %}

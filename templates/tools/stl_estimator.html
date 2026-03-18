@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block title %}STL Filament Estimator{% endblock %}
+{% block content %}
+
+<div style="margin-bottom:8px;">
+  <a href="/dashboard" style="color:var(--muted); font-size:0.9rem;">&larr; Back to tools</a>
+</div>
+
+<h1 style="font-size:1.6rem; margin-bottom:4px;">STL Filament Estimator</h1>
+<p style="color:var(--muted); margin-bottom:4px;">Upload an STL file to estimate filament weight, length, and cost.</p>
+
+{% if not user.is_paid %}
+<p style="margin-bottom:24px;"><span class="uses-badge">{{ user.uses_remaining }} free use{{ 's' if user.uses_remaining != 1 else '' }} remaining</span></p>
+{% else %}
+<p style="margin-bottom:24px;"><span class="uses-badge paid">Unlimited access</span></p>
+{% endif %}
+
+<div class="card">
+  <form method="POST" enctype="multipart/form-data">
+
+    <label for="stl_file">STL file</label>
+    <input type="file" id="stl_file" name="stl_file" accept=".stl" required
+           style="padding:8px; border:1px solid var(--border); border-radius:6px; background:var(--bg-alt); color:var(--text); width:100%; box-sizing:border-box;">
+    <p style="color:var(--muted); font-size:0.85rem; margin-top:4px; margin-bottom:16px;">Binary or ASCII STL. Max 32MB.</p>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0 20px;">
+      <div>
+        <label for="material">Filament material</label>
+        <select id="material" name="material">
+          {% for mat in densities.keys() %}
+          <option value="{{ mat }}" {% if result and result.material == mat %}selected{% endif %}>{{ mat }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="infill">Infill (%)</label>
+        <select id="infill" name="infill">
+          <option value="5"  {% if result and result.infill_pct == 5  %}selected{% endif %}>5% - very light</option>
+          <option value="10" {% if result and result.infill_pct == 10 %}selected{% endif %}>10% - light</option>
+          <option value="15" {% if result and result.infill_pct == 15 %}selected{% endif %}>15%</option>
+          <option value="20" {% if result and result.infill_pct == 20 or not result %}selected{% endif %}>20% - standard</option>
+          <option value="25" {% if result and result.infill_pct == 25 %}selected{% endif %}>25%</option>
+          <option value="30" {% if result and result.infill_pct == 30 %}selected{% endif %}>30%</option>
+          <option value="40" {% if result and result.infill_pct == 40 %}selected{% endif %}>40%</option>
+          <option value="50" {% if result and result.infill_pct == 50 %}selected{% endif %}>50% - strong</option>
+          <option value="60" {% if result and result.infill_pct == 60 %}selected{% endif %}>60%</option>
+          <option value="75" {% if result and result.infill_pct == 75 %}selected{% endif %}>75%</option>
+          <option value="100" {% if result and result.infill_pct == 100 %}selected{% endif %}>100% - solid</option>
+        </select>
+      </div>
+      <div>
+        <label for="walls">Wall count (perimeters)</label>
+        <select id="walls" name="walls">
+          <option value="2" {% if result and result.num_walls == 2 %}selected{% endif %}>2 walls - minimal</option>
+          <option value="3" {% if result and result.num_walls == 3 or not result %}selected{% endif %}>3 walls - standard</option>
+          <option value="4" {% if result and result.num_walls == 4 %}selected{% endif %}>4 walls - strong</option>
+          <option value="5" {% if result and result.num_walls == 5 %}selected{% endif %}>5 walls - very strong</option>
+          <option value="6" {% if result and result.num_walls == 6 %}selected{% endif %}>6 walls</option>
+        </select>
+      </div>
+      <div>
+        <label for="top_bottom">Top/bottom layers</label>
+        <select id="top_bottom" name="top_bottom">
+          <option value="2">2 layers</option>
+          <option value="3">3 layers</option>
+          <option value="4" selected>4 layers - standard</option>
+          <option value="5">5 layers</option>
+          <option value="6">6 layers</option>
+        </select>
+      </div>
+      <div>
+        <label for="layer_height">Layer height (mm)</label>
+        <select id="layer_height" name="layer_height">
+          <option value="0.1">0.1mm - detail</option>
+          <option value="0.15">0.15mm</option>
+          <option value="0.2" {% if not result %}selected{% endif %}>0.2mm - standard</option>
+          <option value="0.25">0.25mm</option>
+          <option value="0.28">0.28mm</option>
+          <option value="0.3">0.3mm - fast</option>
+          <option value="0.4">0.4mm - draft</option>
+        </select>
+      </div>
+      <div>
+        <label for="nozzle_dia">Nozzle diameter (mm)</label>
+        <select id="nozzle_dia" name="nozzle_dia">
+          <option value="0.2">0.2mm</option>
+          <option value="0.4" selected>0.4mm - standard</option>
+          <option value="0.6">0.6mm</option>
+          <option value="0.8">0.8mm</option>
+          <option value="1.0">1.0mm</option>
+        </select>
+      </div>
+      <div>
+        <label for="scale">Print scale (%)</label>
+        <input type="number" id="scale" name="scale" min="1" max="1000" step="1"
+               value="{{ result.scale_pct if result else 100 }}" placeholder="e.g. 100">
+      </div>
+      <div>
+        <label for="copies">Number of copies</label>
+        <input type="number" id="copies" name="copies" min="1" max="100" step="1"
+               value="{{ result.num_copies if result else 1 }}" placeholder="e.g. 1">
+      </div>
+    </div>
+
+    <div style="border-top:1px solid var(--border); margin-top:16px; padding-top:16px;">
+      <p style="color:var(--muted); font-size:0.9rem; margin-bottom:12px;">Optional - for cost estimate</p>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0 20px;">
+        <div>
+          <label for="spool_price">Spool price (£)</label>
+          <input type="number" id="spool_price" name="spool_price" step="0.01" min="0"
+                 placeholder="e.g. 18.99" value="{{ request.form.get('spool_price', '') }}">
+        </div>
+        <div>
+          <label for="spool_weight">Spool weight (grams)</label>
+          <input type="number" id="spool_weight" name="spool_weight" step="1" min="1"
+                 placeholder="e.g. 1000" value="{{ request.form.get('spool_weight', '1000') }}">
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn">Estimate filament</button>
+  </form>
+</div>
+
+{% if result %}
+<div class="result-box">
+  <h3>Estimate for {{ result.filename }}</h3>
+  <p style="color:var(--muted); font-size:0.88rem; margin-bottom:16px;">
+    {{ result.material }} &bull; {{ result.infill_pct }}% infill &bull; {{ result.num_walls }} walls &bull;
+    {{ result.layer_height }}mm layers &bull; {{ result.scale_pct }}% scale &bull; {{ result.num_copies }} {{ 'copy' if result.num_copies == 1 else 'copies' }}
+  </p>
+
+  <div class="result-row">
+    <strong>Model volume (solid)</strong>
+    <span>{{ result.model_volume_cm3 }} cm&sup3;</span>
+  </div>
+  <div class="result-row">
+    <strong>Printed volume (with infill/walls)</strong>
+    <span>{{ result.printed_volume_cm3 }} cm&sup3;</span>
+  </div>
+  <div class="result-row">
+    <strong>Estimated weight</strong>
+    <span>{{ result.weight_g }} g</span>
+  </div>
+  <div class="result-row">
+    <strong>Filament length</strong>
+    <span>{{ result.filament_length_m }} m</span>
+  </div>
+  {% if result.cost > 0 %}
+  <div class="result-row" style="font-size:1.1rem;">
+    <strong>Estimated cost</strong>
+    <span style="color:var(--accent); font-weight:700;">£{{ "%.2f"|format(result.cost) }}</span>
+  </div>
+  {% endif %}
+
+  <div style="margin-top:16px; padding:12px; background:#fff; border-radius:6px; border:1px solid var(--border); font-size:0.85rem; color:var(--muted);">
+    Note: This is an estimate based on model geometry. Actual slicer output may vary by 5-15% depending on support structures, brim/raft, and exact slicer settings.
+  </div>
+</div>
+{% endif %}
+
+{% if not user.is_paid and user.uses_remaining == 0 %}
+<div style="background:#fff8f5; border:2px solid var(--accent); border-radius:10px; padding:24px; margin-top:24px; text-align:center;">
+  <h3 style="margin-bottom:8px;">You've used all your free uses</h3>
+  <p style="color:var(--muted); margin-bottom:16px;">Upgrade for unlimited STL estimates for £5 one-time or £2/month.</p>
+  <a href="/upgrade" class="btn">Upgrade now</a>
+</div>
+{% endif %}
+
+<div style="margin-top:32px; padding-top:24px; border-top:1px solid var(--border);">
+  <h3 style="margin-bottom:8px; font-size:1rem;">How to get your STL file</h3>
+  <p style="color:var(--muted); font-size:0.9rem;">STL files can be exported from any CAD or modelling app (Fusion 360, TinkerCAD, Blender). If you downloaded a model from Thingiverse, Printables, or Makerworld it will already be in STL format. Look for the download button on the model page.</p>
+</div>
+
+{% endblock %}

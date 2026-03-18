@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+<h1 style="font-size:1.6rem; margin-bottom:4px;">Your Tools</h1>
+<p style="color:var(--muted); margin-bottom:24px;">
+  {% if user.is_paid %}
+    <span class="uses-badge paid">Unlimited access</span>
+  {% else %}
+    <span class="uses-badge">{{ user.uses_remaining }} free use{{ 's' if user.uses_remaining != 1 else '' }} remaining</span>
+    &nbsp;
+    <a href="/upgrade">Upgrade for unlimited &rarr;</a>
+  {% endif %}
+</p>
+
+<div class="tool-grid">
+  <div class="tool-card">
+    <div class="tool-icon">🧮</div>
+    <h3>Filament Cost Calculator</h3>
+    <p>Find out exactly what each print costs in filament and electricity.</p>
+    <a href="/tools/filament-cost" class="btn">Open tool</a>
+  </div>
+  <div class="tool-card">
+    <div class="tool-icon">⚙️</div>
+    <h3>Print Settings Cheat Sheet</h3>
+    <p>Recommended settings for every common filament type.</p>
+    <a href="/tools/print-settings" class="btn">Open tool</a>
+  </div>
+  <div class="tool-card">
+    <div class="tool-icon">🖥️</div>
+    <h3>Slicer Recommender</h3>
+    <p>Find the right slicer for your printer and goals.</p>
+    <a href="/tools/slicer-recommender" class="btn">Open tool</a>
+  </div>
+  <div class="tool-card">
+    <div class="tool-icon">📐</div>
+    <h3>STL Filament Estimator</h3>
+    <p>Upload an STL file to estimate filament weight, length, and cost before you slice.</p>
+    <a href="/tools/stl-estimator" class="btn">Open tool</a>
+  </div>
+</div>
+
+{% if not user.is_paid %}
+<div style="background:#fff8f5; border:2px solid var(--accent); border-radius:10px; padding:24px; margin-top:32px;">
+  <h2 style="font-size:1.1rem; margin-bottom:8px;">Get unlimited access</h2>
+  <p style="color:var(--muted); margin-bottom:16px;">£2/month or £5 one-time - use all four tools as often as you like.</p>
+  <a href="/upgrade" class="btn">Upgrade now</a>
+</div>
+{% endif %}
+
+{% endblock %}

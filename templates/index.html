@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Free 3D Printing Tools{% endblock %}
+{% block content %}
+
+<div style="text-align:center; padding: 48px 0 32px;">
+  <h1 style="font-size:2rem; font-weight:800; margin-bottom:12px;">Free 3D Printing Tools</h1>
+  <p style="color:var(--muted); font-size:1.1rem; max-width:520px; margin:0 auto 28px;">
+    Calculators and guides to help you get better prints, faster. Free to try - no credit card needed.
+  </p>
+  {% if not user %}
+    <a href="/register" class="btn" style="margin-right:12px;">Get started free</a>
+    <a href="/login" class="btn btn-outline">Log in</a>
+  {% else %}
+    <a href="/dashboard" class="btn">Go to my tools</a>
+  {% endif %}
+</div>
+
+<div class="tool-grid">
+  <div class="tool-card">
+    <div class="tool-icon">🧮</div>
+    <h3>Filament Cost Calculator</h3>
+    <p>Enter your spool price, weight, and print weight to find out exactly what each print costs you.</p>
+    <a href="{% if user %}/tools/filament-cost{% else %}/register{% endif %}" class="btn">Use tool</a>
+  </div>
+  <div class="tool-card">
+    <div class="tool-icon">⚙️</div>
+    <h3>Print Settings Cheat Sheet</h3>
+    <p>Pick your material and extruder type. Get recommended temperature, speed, retraction, and cooling settings instantly.</p>
+    <a href="{% if user %}/tools/print-settings{% else %}/register{% endif %}" class="btn">Use tool</a>
+  </div>
+  <div class="tool-card">
+    <div class="tool-icon">🖥️</div>
+    <h3>Slicer Recommender</h3>
+    <p>Answer a few questions about your printer and goals. Get a personalised slicer recommendation.</p>
+    <a href="{% if user %}/tools/slicer-recommender{% else %}/register{% endif %}" class="btn">Use tool</a>
+  </div>
+  <div class="tool-card">
+    <div class="tool-icon">📐</div>
+    <h3>STL Filament Estimator</h3>
+    <p>Upload an STL file and get an accurate filament weight, length, and cost estimate before you even open your slicer.</p>
+    <a href="{% if user %}/tools/stl-estimator{% else %}/register{% endif %}" class="btn">Use tool</a>
+  </div>
+</div>
+
+<div style="background:var(--bg-alt); border:1px solid var(--border); border-radius:10px; padding:28px; margin-top:40px; text-align:center;">
+  <h2 style="margin-bottom:8px;">How it works</h2>
+  <p style="color:var(--muted); margin-bottom:20px;">Free accounts get 3 uses across all tools. After that, unlock unlimited access for just £2/month or £5 one-time.</p>
+  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; text-align:left; max-width:600px; margin:0 auto;">
+    <div><strong>1. Register free</strong><p style="color:var(--muted);font-size:0.9rem;">No card needed</p></div>
+    <div><strong>2. Try the tools</strong><p style="color:var(--muted);font-size:0.9rem;">3 free uses</p></div>
+    <div><strong>3. Upgrade if you like it</strong><p style="color:var(--muted);font-size:0.9rem;">£2/mo or £5 once</p></div>
+  </div>
+</div>
+
+{% endblock %}

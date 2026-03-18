@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Print Settings Cheat Sheet{% endblock %}
+{% block content %}
+
+<div style="margin-bottom:8px;">
+  <a href="/dashboard" style="color:var(--muted); font-size:0.9rem;">&larr; Back to tools</a>
+</div>
+
+<h1 style="font-size:1.6rem; margin-bottom:4px;">Print Settings Cheat Sheet</h1>
+<p style="color:var(--muted); margin-bottom:4px;">Select your material, extruder type, and nozzle size for recommended settings.</p>
+
+{% if not user.is_paid %}
+<p style="margin-bottom:24px;"><span class="uses-badge">{{ user.uses_remaining }} free use{{ 's' if user.uses_remaining != 1 else '' }} remaining</span></p>
+{% else %}
+<p style="margin-bottom:24px;"><span class="uses-badge paid">Unlimited access</span></p>
+{% endif %}
+
+<div class="card">
+  <form method="POST">
+    <label for="material">Filament material</label>
+    <select id="material" name="material" required>
+      <option value="">-- Select material --</option>
+      {% for m in materials %}
+        <option value="{{ m }}" {% if selected_material == m %}selected{% endif %}>{{ m }}</option>
+      {% endfor %}
+    </select>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0 20px;">
+      <div>
+        <label for="extruder">Extruder type</label>
+        <select id="extruder" name="extruder">
+          <option value="direct" {% if result and result.extruder == 'direct' %}selected{% endif %}>Direct drive (motor on toolhead)</option>
+          <option value="bowden" {% if result and result.extruder == 'bowden' %}selected{% endif %}>Bowden (motor on frame)</option>
+        </select>
+      </div>
+      <div>
+        <label for="nozzle">Nozzle diameter</label>
+        <select id="nozzle" name="nozzle">
+          <option value="0.2mm" {% if result and result.nozzle == '0.2mm' %}selected{% endif %}>0.2mm - detail</option>
+          <option value="0.3mm" {% if result and result.nozzle == '0.3mm' %}selected{% endif %}>0.3mm</option>
+          <option value="0.4mm" {% if not result or result.nozzle == '0.4mm' %}selected{% endif %}>0.4mm - standard</option>
+          <option value="0.5mm" {% if result and result.nozzle == '0.5mm' %}selected{% endif %}>0.5mm</option>
+          <option value="0.6mm" {% if result and result.nozzle == '0.6mm' %}selected{% endif %}>0.6mm</option>
+          <option value="0.8mm" {% if result and result.nozzle == '0.8mm' %}selected{% endif %}>0.8mm</option>
+          <option value="1.0mm" {% if result and result.nozzle == '1.0mm' %}selected{% endif %}>1.0mm - draft/large</option>
+        </select>
+      </div>
+    </div>
+
+    <button type="submit" class="btn">Get settings</button>
+  </form>
+</div>
+
+{% if result %}
+<div class="result-box">
+  <h3>{{ result.material }} settings ({{ result.extruder|replace('direct','Direct drive')|replace('bowden','Bowden') }}, {{ result.nozzle }} nozzle)</h3>
+
+  {% if result.hardened_nozzle == 'Required' %}
+  <div style="background:#fff3cd; border:1px solid #ffc107; border-radius:6px; padding:12px 16px; margin-bottom:16px; font-size:0.9rem;">
+    <strong>Hardened nozzle required</strong> - {{ result.material }} contains abrasive particles that will quickly destroy a standard brass nozzle. Use hardened steel before printing.
+  </div>
+  {% elif result.hardened_nozzle == 'Recommended' %}
+  <div style="background:#e8f4fd; border:1px solid #90caf9; border-radius:6px; padding:12px 16px; margin-bottom:16px; font-size:0.9rem;">
+    <strong>Hardened nozzle recommended</strong> - A hardened steel nozzle will last significantly longer with {{ result.material }}.
+  </div>
+  {% endif %}
+
+  <div class="result-row">
+    <strong>Nozzle temperature</strong>
+    <span>{{ result.nozzle_temp }}</span>
+  </div>
+  <div class="result-row">
+    <strong>Bed temperature</strong>
+    <span>{{ result.bed_temp }}</span>
+  </div>
+  <div class="result-row">
+    <strong>Print speed</strong>
+    <span>{{ result.print_speed }}</span>
+  </div>
+  <div class="result-row">
+    <strong>First layer speed</strong>
+    <span>{{ result.first_layer_speed }}</span>
+  </div>
+  <div class="result-row">
+    <strong>Retraction</strong>
+    <span>{{ result.retraction }}</span>
+  </div>
+  <div class="result-row">
+    <strong>Part cooling fan</strong>
+    <span>{{ result.cooling }}</span>
+  </div>
+  <div class="result-row">
+    <strong>Enclosure</strong>
+    <span>{{ result.enclosure }}</span>
+  </div>
+  <div class="result-row">
+    <strong>Bed surface</strong>
+    <span>{{ result.bed_surface }}</span>
+  </div>
+  <div style="margin-top:16px; padding:14px; background:#fff; border-radius:6px; border:1px solid var(--border);">
+    <strong style="display:block; margin-bottom:6px;">Tips for {{ result.material }}</strong>
+    <p style="color:var(--muted); font-size:0.93rem; margin:0;">{{ result.notes }}</p>
+  </div>
+</div>
+{% endif %}
+
+{% if not user.is_paid and user.uses_remaining == 0 %}
+<div style="background:#fff8f5; border:2px solid var(--accent); border-radius:10px; padding:24px; margin-top:24px; text-align:center;">
+  <h3 style="margin-bottom:8px;">You've used all your free uses</h3>
+  <p style="color:var(--muted); margin-bottom:16px;">Upgrade for unlimited settings lookups for £5 one-time or £2/month.</p>
+  <a href="/upgrade" class="btn">Upgrade now</a>
+</div>
+{% endif %}
+
+{% endblock %}

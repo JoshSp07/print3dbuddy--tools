@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Filament Cost Calculator{% endblock %}
+{% block content %}
+
+<div style="margin-bottom:8px;">
+  <a href="/dashboard" style="color:var(--muted); font-size:0.9rem;">&larr; Back to tools</a>
+</div>
+
+<h1 style="font-size:1.6rem; margin-bottom:4px;">Filament Cost Calculator</h1>
+<p style="color:var(--muted); margin-bottom:4px;">Find out exactly what each print costs in filament and electricity.</p>
+
+{% if not user.is_paid %}
+<p style="margin-bottom:24px;">
+  <span class="uses-badge">{{ user.uses_remaining }} free use{{ 's' if user.uses_remaining != 1 else '' }} remaining</span>
+</p>
+{% else %}
+<p style="margin-bottom:24px;"><span class="uses-badge paid">Unlimited access</span></p>
+{% endif %}
+
+<div class="card">
+  <form method="POST">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0 20px;">
+      <div>
+        <label for="spool_price">Spool price (£)</label>
+        <input type="number" id="spool_price" name="spool_price" step="0.01" min="0" required placeholder="e.g. 18.99"
+               value="{{ request.form.get('spool_price', '') }}">
+      </div>
+      <div>
+        <label for="spool_weight">Spool weight (grams)</label>
+        <input type="number" id="spool_weight" name="spool_weight" step="1" min="1" required placeholder="e.g. 1000"
+               value="{{ request.form.get('spool_weight', '1000') }}">
+      </div>
+      <div>
+        <label for="print_weight">Print weight (grams)</label>
+        <input type="number" id="print_weight" name="print_weight" step="0.1" min="0" required placeholder="e.g. 45"
+               value="{{ request.form.get('print_weight', '') }}">
+      </div>
+      <div>
+        <label for="waste_pct">Waste / failed prints (%)</label>
+        <select id="waste_pct" name="waste_pct">
+          <option value="0">0% - no waste</option>
+          <option value="3">3%</option>
+          <option value="5" {% if not request.form.get('waste_pct') or request.form.get('waste_pct') == '5' %}selected{% endif %}>5% - typical</option>
+          <option value="10" {% if request.form.get('waste_pct') == '10' %}selected{% endif %}>10%</option>
+          <option value="15" {% if request.form.get('waste_pct') == '15' %}selected{% endif %}>15%</option>
+          <option value="20" {% if request.form.get('waste_pct') == '20' %}selected{% endif %}>20%</option>
+        </select>
+      </div>
+      <div>
+        <label for="print_hours">Print time (hours, optional)</label>
+        <input type="number" id="print_hours" name="print_hours" step="0.5" min="0" placeholder="e.g. 3.5"
+               value="{{ request.form.get('print_hours', '') }}">
+      </div>
+      <div>
+        <label for="electricity_kwh">Electricity rate (£/kWh)</label>
+        <input type="number" id="electricity_kwh" name="electricity_kwh" step="0.01" min="0" placeholder="e.g. 0.29"
+               value="{{ request.form.get('electricity_kwh', '0.29') }}">
+      </div>
+    </div>
+    <button type="submit" class="btn">Calculate cost</button>
+  </form>
+</div>
+
+{% if result %}
+<div class="result-box">
+  <h3>Cost breakdown for {{ result.print_weight }}g print</h3>
+  <div class="result-row">
+    <strong>Filament cost</strong>
+    <span>£{{ "%.2f"|format(result.filament_cost) }}</span>
+  </div>
+  {% if result.waste_cost > 0 %}
+  <div class="result-row">
+    <strong>Waste / failure allowance</strong>
+    <span>£{{ "%.2f"|format(result.waste_cost) }}</span>
+  </div>
+  {% endif %}
+  {% if result.electricity_cost > 0 %}
+  <div class="result-row">
+    <strong>Electricity cost</strong>
+    <span>£{{ "%.2f"|format(result.electricity_cost) }}</span>
+  </div>
+  {% endif %}
+  <div class="result-row" style="font-size:1.1rem;">
+    <strong>Total cost</strong>
+    <span style="color:var(--accent); font-weight:700;">£{{ "%.2f"|format(result.total_cost) }}</span>
+  </div>
+  <div class="result-row">
+    <strong>Cost per gram of filament</strong>
+    <span>£{{ "%.4f"|format(result.cost_per_gram) }}</span>
+  </div>
+  {% if result.prints_per_spool > 0 %}
+  <div class="result-row">
+    <strong>Prints per spool</strong>
+    <span>~{{ result.prints_per_spool }} prints</span>
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
+{% if not user.is_paid and user.uses_remaining == 0 %}
+<div style="background:#fff8f5; border:2px solid var(--accent); border-radius:10px; padding:24px; margin-top:24px; text-align:center;">
+  <h3 style="margin-bottom:8px;">You've used all your free uses</h3>
+  <p style="color:var(--muted); margin-bottom:16px;">Upgrade to continue using all tools unlimited times for £5 one-time or £2/month.</p>
+  <a href="/upgrade" class="btn">Upgrade now</a>
+</div>
+{% endif %}
+
+<div style="margin-top:32px; padding-top:24px; border-top:1px solid var(--border);">
+  <h3 style="margin-bottom:8px; font-size:1rem;">How to find your print weight</h3>
+  <p style="color:var(--muted); font-size:0.9rem;">In most slicers, the estimated filament weight is shown in the print summary before you start. In PrusaSlicer it's shown as "Used filament (g)". In Bambu Studio it shows in the plate info panel. You can also weigh a finished print on kitchen scales.</p>
+</div>
+
+{% endblock %}

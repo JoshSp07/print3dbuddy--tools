@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Slicer Recommender{% endblock %}
+{% block content %}
+
+<div style="margin-bottom:8px;">
+  <a href="/dashboard" style="color:var(--muted); font-size:0.9rem;">&larr; Back to tools</a>
+</div>
+
+<h1 style="font-size:1.6rem; margin-bottom:4px;">Slicer Recommender</h1>
+<p style="color:var(--muted); margin-bottom:4px;">Answer a few questions. Get the right slicer for your setup.</p>
+
+{% if not user.is_paid %}
+<p style="margin-bottom:24px;"><span class="uses-badge">{{ user.uses_remaining }} free use{{ 's' if user.uses_remaining != 1 else '' }} remaining</span></p>
+{% else %}
+<p style="margin-bottom:24px;"><span class="uses-badge paid">Unlimited access</span></p>
+{% endif %}
+
+<div class="card">
+  <form method="POST">
+    <label for="printer_brand">What printer do you have?</label>
+    <select id="printer_brand" name="printer_brand" required>
+      <option value="">-- Select --</option>
+      <option value="bambu"    {% if result and result.printer_brand == 'bambu'    %}selected{% endif %}>Bambu Lab (A1, P1, X1 series)</option>
+      <option value="prusa"    {% if result and result.printer_brand == 'prusa'    %}selected{% endif %}>Prusa (MK3, MK4, Mini, XL)</option>
+      <option value="creality" {% if result and result.printer_brand == 'creality' %}selected{% endif %}>Creality (Ender 3, CR-10, K1, etc.)</option>
+      <option value="elegoo"   {% if result and result.printer_brand == 'elegoo'   %}selected{% endif %}>Elegoo (Neptune, Mars series)</option>
+      <option value="anycubic" {% if result and result.printer_brand == 'anycubic' %}selected{% endif %}>Anycubic (Kobra, Vyper, etc.)</option>
+      <option value="artillery" {% if result and result.printer_brand == 'artillery' %}selected{% endif %}>Artillery (Sidewinder, Genius)</option>
+      <option value="voron"    {% if result and result.printer_brand == 'voron'    %}selected{% endif %}>Voron (2.4, Trident, V0, etc.)</option>
+      <option value="other"    {% if result and result.printer_brand == 'other'    %}selected{% endif %}>Other / Not sure</option>
+    </select>
+
+    <label for="experience">How experienced are you?</label>
+    <select id="experience" name="experience" required>
+      <option value="">-- Select --</option>
+      <option value="beginner"     {% if result and result.experience == 'beginner'     %}selected{% endif %}>Beginner - new to 3D printing</option>
+      <option value="intermediate" {% if result and result.experience == 'intermediate' %}selected{% endif %}>Intermediate - comfortable with settings</option>
+      <option value="advanced"     {% if result and result.experience == 'advanced'     %}selected{% endif %}>Advanced - want full control</option>
+    </select>
+
+    <label for="priority">What matters most to you?</label>
+    <select id="priority" name="priority" required>
+      <option value="">-- Select --</option>
+      <option value="ease"    {% if result and result.priority == 'ease'    %}selected{% endif %}>Ease of use - just want it to work</option>
+      <option value="speed"   {% if result and result.priority == 'speed'   %}selected{% endif %}>Speed - fastest slicing and printing</option>
+      <option value="control" {% if result and result.priority == 'control' %}selected{% endif %}>Control - full customisation</option>
+    </select>
+
+    <label for="use_case">What do you mainly print?</label>
+    <select id="use_case" name="use_case">
+      <option value="">-- Select (optional) --</option>
+      <option value="general">General / mixed use</option>
+      <option value="functional">Functional parts - need strength</option>
+      <option value="miniatures">Miniatures and detailed models</option>
+      <option value="large">Large objects - bed space is key</option>
+      <option value="cosplay">Cosplay / display pieces</option>
+      <option value="flexible">Flexible parts (TPU)</option>
+    </select>
+
+    <label style="margin-top:8px; margin-bottom:6px; display:block;">Materials you print (optional - tick all that apply)</label>
+    <div style="display:flex; flex-wrap:wrap; gap:8px 20px; margin-bottom:16px;">
+      {% set mats = ['PLA','PLA+','PETG','ABS','ASA','TPU','Nylon','PC','Wood PLA'] %}
+      {% for m in mats %}
+      <label style="display:flex; align-items:center; gap:6px; font-weight:normal; cursor:pointer;">
+        <input type="checkbox" name="materials" value="{{ m.lower() }}" style="width:auto;"> {{ m }}
+      </label>
+      {% endfor %}
+    </div>
+
+    <button type="submit" class="btn">Get recommendation</button>
+  </form>
+</div>
+
+{% if result %}
+<div class="result-box">
+  <h3>Your slicer recommendations</h3>
+  {% for rec in result.recommendations %}
+  <div style="background:#fff; border:1px solid var(--border); border-radius:8px; padding:18px; margin-bottom:12px;">
+    <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:8px;">
+      <strong style="font-size:1.05rem;">{{ rec.name }}</strong>
+      <span style="background:{% if loop.first %}var(--accent){% else %}#e0e0e0{% endif %}; color:{% if loop.first %}#fff{% else %}var(--text){% endif %}; padding:2px 10px; border-radius:12px; font-size:0.8rem; font-weight:600;">{{ rec.verdict }}</span>
+    </div>
+    <p style="color:var(--muted); font-size:0.93rem; margin-bottom:12px;">{{ rec.reason }}</p>
+    <a href="{{ rec.url }}" target="_blank" rel="noopener" class="btn btn-outline" style="font-size:0.9rem; padding:6px 16px;">Download free &rarr;</a>
+  </div>
+  {% endfor %}
+
+  {% if result.notes %}
+  <div style="margin-top:16px; padding:14px; background:#fff; border-radius:6px; border:1px solid var(--border);">
+    <strong style="display:block; margin-bottom:8px;">Additional tips</strong>
+    {% for note in result.notes %}
+    <p style="color:var(--muted); font-size:0.93rem; margin:0 0 6px;">- {{ note }}</p>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
+{% if not user.is_paid and user.uses_remaining == 0 %}
+<div style="background:#fff8f5; border:2px solid var(--accent); border-radius:10px; padding:24px; margin-top:24px; text-align:center;">
+  <h3 style="margin-bottom:8px;">You've used all your free uses</h3>
+  <p style="color:var(--muted); margin-bottom:16px;">Upgrade for unlimited recommendations for £5 one-time or £2/month.</p>
+  <a href="/upgrade" class="btn">Upgrade now</a>
+</div>
+{% endif %}
+
+{% endblock %}

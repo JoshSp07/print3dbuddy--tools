@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Upgrade to Unlimited{% endblock %}
+{% block content %}
+
+<div style="max-width:600px; margin:0 auto; text-align:center;">
+  <h1 style="font-size:1.8rem; margin-bottom:12px;">Unlimited Access</h1>
+  <p style="color:var(--muted); font-size:1.05rem; margin-bottom:32px;">
+    Use all four tools as often as you like. Pick the plan that suits you.
+  </p>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:32px;">
+
+    <!-- Monthly plan -->
+    <div style="background:var(--bg-alt); border:1px solid var(--border); border-radius:10px; padding:28px; text-align:left;">
+      <h2 style="font-size:0.9rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:16px;">Monthly</h2>
+      <div style="font-size:2rem; font-weight:800; margin-bottom:4px;">£2<span style="font-size:0.95rem; font-weight:400; color:var(--muted);">/month</span></div>
+      <p style="color:var(--muted); font-size:0.85rem; margin-bottom:20px;">Billed monthly. Cancel any time.</p>
+      <ul style="list-style:none; padding:0; margin-bottom:24px;">
+        <li style="padding:6px 0; border-bottom:1px solid var(--border);">✅ &nbsp; All 4 tools, unlimited uses</li>
+        <li style="padding:6px 0; border-bottom:1px solid var(--border);">✅ &nbsp; New tools as we add them</li>
+        <li style="padding:6px 0;">✅ &nbsp; Cancel any time</li>
+      </ul>
+      <form action="/create-checkout-session" method="POST">
+        <input type="hidden" name="plan" value="monthly">
+        <button type="submit" class="btn btn-outline" style="width:100%; padding:12px;">
+          Subscribe &rarr;
+        </button>
+      </form>
+    </div>
+
+    <!-- Lifetime plan -->
+    <div style="background:var(--bg-alt); border:2px solid var(--accent); border-radius:10px; padding:28px; text-align:left; position:relative;">
+      <div style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--accent); color:#fff; padding:3px 14px; border-radius:12px; font-size:0.8rem; font-weight:700; white-space:nowrap;">Best value</div>
+      <h2 style="font-size:0.9rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:16px;">One-time</h2>
+      <div style="font-size:2rem; font-weight:800; margin-bottom:4px;">£5<span style="font-size:0.95rem; font-weight:400; color:var(--muted);"> once</span></div>
+      <p style="color:var(--muted); font-size:0.85rem; margin-bottom:20px;">Pay once. Access forever. No renewals.</p>
+      <ul style="list-style:none; padding:0; margin-bottom:24px;">
+        <li style="padding:6px 0; border-bottom:1px solid var(--border);">✅ &nbsp; All 4 tools, unlimited uses</li>
+        <li style="padding:6px 0; border-bottom:1px solid var(--border);">✅ &nbsp; New tools as we add them</li>
+        <li style="padding:6px 0;">✅ &nbsp; Pay once, keep forever</li>
+      </ul>
+      <form action="/create-checkout-session" method="POST">
+        <input type="hidden" name="plan" value="lifetime">
+        <button type="submit" class="btn" style="width:100%; padding:12px;">
+          Buy lifetime &rarr;
+        </button>
+      </form>
+    </div>
+
+  </div>
+
+  <p style="color:var(--muted); font-size:0.85rem;">
+    Secure payment via Stripe. We never store card details.
+  </p>
+</div>
+
+{% endblock %}

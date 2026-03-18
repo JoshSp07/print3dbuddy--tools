@@ -17,6 +17,12 @@ from flask import (Flask, render_template, request, redirect, url_for,
 from werkzeug.security import generate_password_hash, check_password_hash
 import stripe
 
+DATABASE_URL = os.environ.get('DATABASE_URL', '')
+USE_POSTGRES = bool(DATABASE_URL)
+if USE_POSTGRES:
+    import psycopg2
+    import psycopg2.extras
+
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-change-in-production')
 app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024  # 32MB max upload
@@ -29,14 +35,20 @@ STRIPE_WEBHOOK_SECRET  = os.environ.get('STRIPE_WEBHOOK_SECRET', '')
 DOMAIN = os.environ.get('DOMAIN', 'http://localhost:5000')
 
 FREE_USES = 3
-DB_PATH = os.environ.get('DB_PATH', '/data/users.db') if os.path.isdir('/data') else 'users.db'
+DB_PATH = 'users.db'
 
 # ── Database ──────────────────────────────────────────────────────────────────
 
 def get_db():
     if 'db' not in g:
-        g.db = sqlite3.connect(DB_PATH)
-        g.db.row_factory = sqlite3.Row
+        if USE_POSTGRES:
+            url = DATABASE_URL
+            if url.startswith('postgres://'):
+                url = url.replace('postgres://', 'postgresql://', 1)
+            g.db = psycopg2.connect(url, cursor_factory=psycopg2.extras.RealDictCursor)
+        else:
+            g.db = sqlite3.connect(DB_PATH)
+            g.db.row_factory = sqlite3.Row
     return g.db
 
 @app.teardown_appcontext
@@ -45,26 +57,78 @@ def close_db(e=None):
     if db:
         db.close()
 
+def db_execute(sql, params=()):
+    """Execute a query, handling placeholder differences between SQLite and PostgreSQL."""
+    db = get_db()
+    if USE_POSTGRES:
+        cur = db.cursor()
+        cur.execute(sql, params)
+        db.commit()
+        return cur
+    else:
+        return db.execute(sql.replace('%s', '?'), params)
+
+def db_fetchone(sql, params=()):
+    db = get_db()
+    if USE_POSTGRES:
+        cur = db.cursor()
+        cur.execute(sql, params)
+        return cur.fetchone()
+    else:
+        return db.execute(sql.replace('%s', '?'), params).fetchone()
+
+def db_fetchall(sql, params=()):
+    db = get_db()
+    if USE_POSTGRES:
+        cur = db.cursor()
+        cur.execute(sql, params)
+        return cur.fetchall()
+    else:
+        return db.execute(sql.replace('%s', '?'), params).fetchall()
+
+def db_commit():
+    if not USE_POSTGRES:
+        get_db().commit()
+
 def init_db():
-    db = sqlite3.connect(DB_PATH)
-    db.execute('''CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        email TEXT UNIQUE NOT NULL,
-        password_hash TEXT NOT NULL,
-        uses_remaining INTEGER DEFAULT 3,
-        is_paid INTEGER DEFAULT 0,
-        payment_type TEXT DEFAULT 'free',
-        stripe_customer_id TEXT,
-        stripe_subscription_id TEXT,
-        created_at TEXT DEFAULT CURRENT_TIMESTAMP
-    )''')
-    # Add payment_type column if upgrading from old schema
-    try:
-        db.execute('ALTER TABLE users ADD COLUMN payment_type TEXT DEFAULT "free"')
-    except Exception:
-        pass
-    db.commit()
-    db.close()
+    if USE_POSTGRES:
+        url = DATABASE_URL
+        if url.startswith('postgres://'):
+            url = url.replace('postgres://', 'postgresql://', 1)
+        conn = psycopg2.connect(url)
+        cur = conn.cursor()
+        cur.execute('''CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            email TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            uses_remaining INTEGER DEFAULT 3,
+            is_paid INTEGER DEFAULT 0,
+            payment_type TEXT DEFAULT 'free',
+            stripe_customer_id TEXT,
+            stripe_subscription_id TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )''')
+        conn.commit()
+        conn.close()
+    else:
+        db = sqlite3.connect(DB_PATH)
+        db.execute('''CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            uses_remaining INTEGER DEFAULT 3,
+            is_paid INTEGER DEFAULT 0,
+            payment_type TEXT DEFAULT 'free',
+            stripe_customer_id TEXT,
+            stripe_subscription_id TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )''')
+        try:
+            db.execute('ALTER TABLE users ADD COLUMN payment_type TEXT DEFAULT "free"')
+        except Exception:
+            pass
+        db.commit()
+        db.close()
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
 
@@ -80,15 +144,14 @@ def login_required(f):
 def get_current_user():
     if 'user_id' not in session:
         return None
-    return get_db().execute('SELECT * FROM users WHERE id = ?', (session['user_id'],)).fetchone()
+    return db_fetchone('SELECT * FROM users WHERE id = %s', (session['user_id'],))
 
 def can_use_tool(user):
     return bool(user['is_paid']) or user['uses_remaining'] > 0
 
 def consume_use(user_id):
-    db = get_db()
-    db.execute('UPDATE users SET uses_remaining = uses_remaining - 1 WHERE id = ? AND uses_remaining > 0 AND is_paid = 0', (user_id,))
-    db.commit()
+    db_execute('UPDATE users SET uses_remaining = uses_remaining - 1 WHERE id = %s AND uses_remaining > 0 AND is_paid = 0', (user_id,))
+    db_commit()
 
 # ── Auth routes ───────────────────────────────────────────────────────────────
 
@@ -100,14 +163,13 @@ def register():
         if len(password) < 6:
             flash('Password must be at least 6 characters.', 'error')
             return render_template('register.html')
-        db = get_db()
-        if db.execute('SELECT id FROM users WHERE email = ?', (email,)).fetchone():
+        if db_fetchone('SELECT id FROM users WHERE email = %s', (email,)):
             flash('An account with that email already exists.', 'error')
             return render_template('register.html')
-        db.execute('INSERT INTO users (email, password_hash) VALUES (?, ?)',
+        db_execute('INSERT INTO users (email, password_hash) VALUES (%s, %s)',
                    (email, generate_password_hash(password)))
-        db.commit()
-        user = db.execute('SELECT * FROM users WHERE email = ?', (email,)).fetchone()
+        db_commit()
+        user = db_fetchone('SELECT * FROM users WHERE email = %s', (email,))
         session['user_id'] = user['id']
         flash(f'Welcome! You have {FREE_USES} free uses across all tools.', 'success')
         return redirect(url_for('dashboard'))
@@ -118,8 +180,7 @@ def login():
     if request.method == 'POST':
         email = request.form['email'].strip().lower()
         password = request.form['password']
-        db = get_db()
-        user = db.execute('SELECT * FROM users WHERE email = ?', (email,)).fetchone()
+        user = db_fetchone('SELECT * FROM users WHERE email = %s', (email,))
         if not user or not check_password_hash(user['password_hash'], password):
             flash('Incorrect email or password.', 'error')
             return render_template('login.html')
@@ -623,22 +684,10 @@ def create_checkout_session():
 @app.route('/payment-success')
 @login_required
 def payment_success():
-    session_id = request.args.get('session_id')
     plan = request.args.get('plan', 'monthly')
-    if session_id and stripe.api_key:
-        try:
-            checkout = stripe.checkout.Session.retrieve(session_id)
-            user_id = int(checkout.metadata.get('user_id', 0))
-            if user_id == session['user_id']:
-                db = get_db()
-                sub_id = getattr(checkout, 'subscription', None)
-                db.execute('''UPDATE users SET is_paid=1, payment_type=?,
-                              stripe_customer_id=?, stripe_subscription_id=?
-                              WHERE id=?''',
-                           (plan, checkout.customer, sub_id, user_id))
-                db.commit()
-        except Exception:
-            pass
+    db_execute('UPDATE users SET is_paid=1, payment_type=%s WHERE id=%s',
+               (plan, session['user_id']))
+    db_commit()
     flash('Payment successful! You now have unlimited access.', 'success')
     return redirect(url_for('dashboard'))
 
@@ -652,11 +701,9 @@ def stripe_webhook():
         return '', 400
     if event['type'] == 'customer.subscription.deleted':
         customer_id = event['data']['object']['customer']
-        db = sqlite3.connect(DB_PATH)
-        db.execute("UPDATE users SET is_paid=0, payment_type='free' WHERE stripe_customer_id=?",
+        db_execute("UPDATE users SET is_paid=0, payment_type='free' WHERE stripe_customer_id=%s",
                    (customer_id,))
-        db.commit()
-        db.close()
+        db_commit()
     return '', 200
 
 

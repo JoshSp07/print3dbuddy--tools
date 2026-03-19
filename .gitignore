@@ -8,3 +8,5 @@ dist/
 build/
 .venv/
 venv/
+pinterest_bot/tokens.json
+pinterest_bot/posted_pins.json

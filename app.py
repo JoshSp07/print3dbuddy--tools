@@ -707,6 +707,29 @@ def stripe_webhook():
     return '', 200
 
 
+# ── STL Downloads ─────────────────────────────────────────────────────────────
+
+STL_FILES = {
+    'overhang-test':    'overhang_test.stl',
+    'retraction-test':  'retraction_test.stl',
+    'bridging-test':    'bridging_test.stl',
+    'first-layer-test': 'first_layer_test.stl',
+    'temp-tower':       'temp_tower.stl',
+}
+
+@app.route('/download/stl/<slug>')
+@login_required
+def download_stl(slug):
+    user = get_current_user()
+    if not user['is_paid']:
+        flash('STL downloads are available to paid members. Upgrade below.', 'warning')
+        return redirect(url_for('upgrade'))
+    filename = STL_FILES.get(slug)
+    if not filename:
+        return 'Not found', 404
+    return redirect(f'https://print3dbuddy.com/static/stl/{filename}')
+
+
 init_db()
 
 if __name__ == '__main__':

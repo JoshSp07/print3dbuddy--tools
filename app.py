@@ -820,6 +820,56 @@ TEST_PRINTS = [
         'related': 'https://print3dbuddy.com/posts/pla-vs-petg-vs-abs-which-filament-for-beginners/',
         'related_label': 'Filament comparison guide',
     },
+    {
+        'id': 'flow-rate-test',
+        'title': 'Flow Rate Test',
+        'tagline': 'Dial in your extrusion multiplier for clean, accurate prints',
+        'tag': 'Flow Rate',
+        'summary': 'Five flat tiles labelled 90% to 110% — each sliced with its corresponding flow rate in the slicer. Print all five, compare the top surfaces, and the smoothest tile with no gaps or ridges tells you your correct extrusion multiplier. Takes about 20 minutes and removes the guesswork from flow calibration.',
+        'guide': '''<h3 style="font-size:0.95rem;margin:0 0 8px;">What it tests</h3>
+<p>5 flat tiles (30x30x4mm), labelled 90% through 110%. Each one is sliced with a different flow rate (extrusion multiplier) so you can compare results side by side.</p>
+<h3 style="font-size:0.95rem;margin:14px 0 8px;">Slicer setup</h3>
+<ol style="margin:0 0 12px 20px;">
+  <li>Import the STL and split into individual objects in your slicer.</li>
+  <li>Set each tile's flow/extrusion multiplier to its label: 0.90, 0.95, 1.00, 1.05, 1.10.</li>
+  <li>Print all 5 at once at your normal speed and temperature.</li>
+</ol>
+<h3 style="font-size:0.95rem;margin:14px 0 8px;">Reading the result</h3>
+<ul style="margin:0 0 0 20px;">
+  <li><strong>Gaps or rough top surface:</strong> flow too low — move up one tile</li>
+  <li><strong>Ridges, blobbing, or raised seam:</strong> flow too high — move down one tile</li>
+  <li><strong>Smooth, flat, consistent surface:</strong> that is your correct flow rate</li>
+</ul>
+<p style="margin-top:10px;">Dial in to the nearest 1% from there. Most filaments land between 95-100%.</p>''',
+        'related': 'https://print3dbuddy.com/posts/how-to-calibrate-flow-rate-extrusion-multiplier/',
+        'related_label': 'Flow rate calibration guide',
+    },
+    {
+        'id': 'ironing-test',
+        'title': 'Ironing Test',
+        'tagline': 'Find the right ironing settings for glass-smooth top surfaces',
+        'tag': 'Ironing',
+        'summary': 'Four flat tiles — one with no ironing as a baseline, then three with ironing enabled at 10%, 15%, and 20% flow. Split them in your slicer, assign the settings, and print all four. The tile with the smoothest, most glossy top surface is your ideal ironing flow rate.',
+        'guide': '''<h3 style="font-size:0.95rem;margin:0 0 8px;">What it tests</h3>
+<p>4 flat tiles (40x40x3mm). Tile 1 is printed without ironing as a baseline. Tiles 2-4 have ironing enabled at increasing flow rates so you can see the difference directly.</p>
+<h3 style="font-size:0.95rem;margin:14px 0 8px;">Slicer setup</h3>
+<ol style="margin:0 0 12px 20px;">
+  <li>Import the STL and split into individual objects.</li>
+  <li>Tile 1: ironing off. Tiles 2-4: ironing on at 10%, 15%, 20% flow.</li>
+  <li>Set ironing speed to 50% of your normal print speed for all ironed tiles.</li>
+  <li>Print all 4 at once.</li>
+</ol>
+<h3 style="font-size:0.95rem;margin:14px 0 8px;">Reading the result</h3>
+<ul style="margin:0 0 0 20px;">
+  <li><strong>Shiny, smooth, flat surface:</strong> correct setting</li>
+  <li><strong>Still looks rough or uneven:</strong> try a higher flow or slower speed</li>
+  <li><strong>Grooves or lines visible:</strong> spacing too wide — reduce ironing line spacing in slicer</li>
+  <li><strong>Over-extruded ridges:</strong> flow too high — drop by 5%</li>
+</ul>
+<p style="margin-top:10px;">Most PLA lands at 10-15% flow. PETG often needs 15-20%. Works best on flat top surfaces.</p>''',
+        'related': 'https://print3dbuddy.com/posts/3d-printing-ironing-guide/',
+        'related_label': 'Ironing settings guide',
+    },
 ]
 
 
@@ -836,6 +886,8 @@ STL_FILES = {
     'bridging-test':    'bridging_test.stl',
     'first-layer-test': 'first_layer_test.stl',
     'temp-tower':       'temp_tower.stl',
+    'flow-rate-test':   'flow_rate_test.stl',
+    'ironing-test':     'ironing_test.stl',
 }
 
 @app.route('/download/stl/<slug>')

@@ -13,7 +13,7 @@ import numpy as np
 from datetime import datetime
 from functools import wraps
 from flask import (Flask, render_template, request, redirect, url_for,
-                   session, flash, g)
+                   session, flash, g, send_from_directory)
 from werkzeug.security import generate_password_hash, check_password_hash
 import stripe
 
@@ -705,6 +705,33 @@ def stripe_webhook():
                    (customer_id,))
         db_commit()
     return '', 200
+
+
+# ── STL Downloads (paid members only) ─────────────────────────────────────────
+
+ALLOWED_STLS = {
+    'overhang-test':    'overhang_test.stl',
+    'retraction-test':  'retraction_test.stl',
+    'bridging-test':    'bridging_test.stl',
+    'first-layer-test': 'first_layer_test.stl',
+    'temp-tower':       'temp_tower.stl',
+}
+
+@app.route('/download/stl/<slug>')
+@login_required
+def download_stl(slug):
+    user = get_current_user()
+    if not user['is_paid']:
+        flash('STL downloads are available to paid members. Upgrade to access all test prints.', 'warning')
+        return redirect(url_for('upgrade'))
+    filename = ALLOWED_STLS.get(slug)
+    if not filename:
+        return 'File not found', 404
+    return send_from_directory(
+        os.path.join(app.root_path, 'static', 'stl'),
+        filename,
+        as_attachment=True
+    )
 
 
 init_db()

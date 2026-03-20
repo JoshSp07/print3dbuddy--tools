@@ -11,7 +11,7 @@
     <a href="/register" class="btn" style="margin-right:12px;">Get started free</a>
     <a href="/login" class="btn btn-outline">Log in</a>
   {% else %}
-    <a href="/dashboard" class="btn">My dashboard &rarr;</a>
+    <p style="color:var(--muted); font-size:0.9rem;">Logged in as {{ user.email }} &mdash; <a href="/dashboard">My Account</a> &middot; <a href="/logout">Log out</a></p>
   {% endif %}
 </div>
 

@@ -24,6 +24,9 @@
 
     header { background: var(--dark); padding: 0 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
     nav { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+    .nav-left { display: flex; align-items: center; gap: 20px; }
+    .nav-back { color: #888; font-size: 0.82rem; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+    .nav-back:hover { color: #ccc; text-decoration: none; }
     .logo { color: #fff; font-size: 1.1rem; font-weight: 700; }
     .logo span { color: var(--accent); }
     .nav-links { display: flex; gap: 20px; align-items: center; list-style: none; }
@@ -79,12 +82,15 @@
 <body>
 <header>
   <nav>
-    <a href="/" class="logo">Print3D<span>Buddy</span></a>
+    <div class="nav-left">
+      <a href="https://print3dbuddy.com" class="nav-back">&#8592; Main Site</a>
+      <a href="/" class="logo">Print3D<span>Buddy</span></a>
+    </div>
     <ul class="nav-links">
-      <li><a href="https://print3dbuddy.com" target="_blank">Main Site</a></li>
+      <li><a href="/">Services</a></li>
       <li><a href="/test-prints">Test Prints</a></li>
       {% if user %}
-        <li><a href="/dashboard">Dashboard</a></li>
+        <li><a href="/dashboard">Account</a></li>
         <li><a href="/logout">Log out</a></li>
         {% if not user.is_paid %}
           <li><a href="/upgrade" class="nav-btn">Upgrade &mdash; from &pound;2/mo</a></li>

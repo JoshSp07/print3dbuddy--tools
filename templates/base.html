@@ -79,14 +79,15 @@
 <body>
 <header>
   <nav>
-    <a href="/" class="logo">Print3D<span>Buddy</span> Tools</a>
+    <a href="/" class="logo">Print3D<span>Buddy</span></a>
     <ul class="nav-links">
       <li><a href="https://print3dbuddy.com" target="_blank">Main Site</a></li>
+      <li><a href="/test-prints">Test Prints</a></li>
       {% if user %}
         <li><a href="/dashboard">Dashboard</a></li>
         <li><a href="/logout">Log out</a></li>
         {% if not user.is_paid %}
-          <li><a href="/upgrade" class="nav-btn">Upgrade - from £2/mo</a></li>
+          <li><a href="/upgrade" class="nav-btn">Upgrade &mdash; from &pound;2/mo</a></li>
         {% endif %}
       {% else %}
         <li><a href="/login">Log in</a></li>

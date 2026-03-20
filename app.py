@@ -707,6 +707,127 @@ def stripe_webhook():
     return '', 200
 
 
+# ── Test Prints ───────────────────────────────────────────────────────────────
+
+TEST_PRINTS = [
+    {
+        'id': 'overhang-test',
+        'title': 'Overhang Test',
+        'tagline': 'Find your printer\'s maximum overhang angle',
+        'tag': 'Overhang',
+        'summary': 'Prints 11 fins angled from 20\u00b0 to 70\u00b0 so you can see exactly where your printer starts to struggle with overhangs. Print it once without supports, check which fins look clean, and you\'ll know the precise angle at which to set your slicer\'s support threshold \u2014 no more guessing.',
+        'guide': '''<h3 style="font-size:0.95rem;margin:0 0 8px;">What it tests</h3>
+<p>11 fins side by side, each angled further from vertical \u2014 20\u00b0 (nearly upright) to 70\u00b0 (nearly horizontal). Most printers handle up to 45\u201350\u00b0 cleanly.</p>
+<h3 style="font-size:0.95rem;margin:14px 0 8px;">How to run it</h3>
+<ol style="margin:0 0 12px 20px;">
+  <li>Print at your normal settings with no supports enabled.</li>
+  <li>Look at the underside of each fin straight on.</li>
+  <li>Find the first fin where the surface looks rough, droopy, or stringy.</li>
+  <li>The previous fin's angle is your safe overhang limit.</li>
+</ol>
+<h3 style="font-size:0.95rem;margin:14px 0 8px;">What to do with the result</h3>
+<p>Set your slicer's support threshold 5\u00b0 below your limit. If your limit is 45\u00b0, set supports to kick in at 40\u00b0. If even 20\u00b0 looks bad, check your part cooling fan speed.</p>''',
+        'related': 'https://print3dbuddy.com/posts/how-to-calibrate-your-first-3d-printer/',
+        'related_label': 'Full calibration guide',
+    },
+    {
+        'id': 'retraction-test',
+        'title': 'Retraction / Stringing Test',
+        'tagline': 'Dial in retraction and eliminate stringing for good',
+        'tag': 'Retraction',
+        'summary': 'Seven thin towers spaced 20mm apart force the printhead to travel across open air on every pass. Any excess filament oozing from the nozzle shows up as strings or blobs between the towers. Adjust retraction distance and temperature until the towers print clean \u2014 that\'s your dialled-in setting.',
+        'guide': '''<h3 style="font-size:0.95rem;margin:0 0 8px;">What it tests</h3>
+<p>7 thin pillars the printhead must travel between without extruding. Any oozing shows up as strings or blobs.</p>
+<h3 style="font-size:0.95rem;margin:14px 0 8px;">How to run it</h3>
+<ol style="margin:0 0 12px 20px;">
+  <li>Print at your normal settings.</li>
+  <li>Check for threads or blobs between the towers.</li>
+  <li>Strings present: increase retraction by 0.5mm, reprint.</li>
+  <li>Towers look blobby: too much retraction \u2014 reduce by 0.5mm steps.</li>
+</ol>
+<h3 style="font-size:0.95rem;margin:14px 0 8px;">Quick reference</h3>
+<ul style="margin:0 0 0 20px;">
+  <li><strong>Direct drive:</strong> start at 1\u20132mm retraction</li>
+  <li><strong>Bowden:</strong> start at 4\u20136mm retraction</li>
+  <li><strong>Still stringing?</strong> Drop nozzle temp by 5\u00b0C</li>
+</ul>''',
+        'related': 'https://print3dbuddy.com/posts/how-to-fix-3d-printer-stringing/',
+        'related_label': 'Full stringing fix guide',
+    },
+    {
+        'id': 'bridging-test',
+        'title': 'Bridging Test',
+        'tagline': 'Find the longest span your printer can cross without supports',
+        'tag': 'Bridging',
+        'summary': 'Five bridge sections spanning 10mm to 50mm, printed with nothing underneath. Flip the finished print and inspect each underside \u2014 a successful bridge is flat and smooth, a failing one sags. Knowing your bridge limit means you can model and slice with or without supports intelligently.',
+        'guide': '''<h3 style="font-size:0.95rem;margin:0 0 8px;">What it tests</h3>
+<p>5 pairs of pillars with bridges spanning 10, 20, 30, 40, and 50mm. Bridging is printed in mid-air with nothing underneath.</p>
+<h3 style="font-size:0.95rem;margin:14px 0 8px;">How to run it</h3>
+<ol style="margin:0 0 12px 20px;">
+  <li>Print with no supports at your normal settings.</li>
+  <li>Flip the print and look at the underside of each bridge.</li>
+  <li>Find the longest span that is flat and clean \u2014 that is your bridging limit.</li>
+</ol>
+<h3 style="font-size:0.95rem;margin:14px 0 8px;">If bridges are sagging</h3>
+<ul style="margin:0 0 0 20px;">
+  <li>Reduce bridge speed to 50% of normal</li>
+  <li>Set part cooling fan to 100%</li>
+  <li>Drop nozzle temp by 5\u00b0C</li>
+</ul>''',
+        'related': 'https://print3dbuddy.com/posts/3d-printing-supports-guide/',
+        'related_label': 'Full supports guide',
+    },
+    {
+        'id': 'first-layer-test',
+        'title': 'First Layer Calibration',
+        'tagline': 'Get your Z offset right and nail first layer adhesion',
+        'tag': 'First Layer',
+        'summary': 'A thin 60\u00d760mm grid square that makes your first layer immediately readable. Lines that merge together mean the nozzle is too close; lines that won\'t stick mean it\'s too far. Takes under 5 minutes to print and gives you a concrete target to tune your Z offset against.',
+        'guide': '''<h3 style="font-size:0.95rem;margin:0 0 8px;">What it tests</h3>
+<p>A thin square (3 layers, 0.6mm total) with a raised grid pattern. Shows exactly how your first layer is landing across the whole print surface.</p>
+<h3 style="font-size:0.95rem;margin:14px 0 8px;">How to run it</h3>
+<ol style="margin:0 0 12px 20px;">
+  <li>Print at 0.2mm layer height (3 layers total = 0.6mm).</li>
+  <li>Watch the first layer live, then inspect the finished print.</li>
+</ol>
+<h3 style="font-size:0.95rem;margin:14px 0 8px;">Reading the result</h3>
+<ul style="margin:0 0 0 20px;">
+  <li><strong>Grid lines merge:</strong> nozzle too close \u2014 raise Z offset by 0.05mm</li>
+  <li><strong>Lines gappy or not sticking:</strong> nozzle too far \u2014 lower Z by 0.05mm</li>
+  <li><strong>Elephant foot on circles:</strong> nozzle too close</li>
+  <li><strong>Correct:</strong> lines slightly squished, separate, circles round</li>
+</ul>''',
+        'related': 'https://print3dbuddy.com/posts/3d-printing-first-layer-problems-fixes/',
+        'related_label': 'First layer problems guide',
+    },
+    {
+        'id': 'temp-tower',
+        'title': 'Temperature Tower',
+        'tagline': 'Find the ideal printing temperature for any filament',
+        'tag': 'Temperature',
+        'summary': 'Six stacked segments printed at descending temperatures from 220\u00b0C to 195\u00b0C, each with a small overhang tab. Compare surface finish, stringing, and overhang quality across the segments to find the sweet spot for a specific filament brand. Useful every time you switch to an unfamiliar spool.',
+        'guide': '''<h3 style="font-size:0.95rem;margin:0 0 8px;">What it tests</h3>
+<p>6 stacked segments (220\u00b0C down to 195\u00b0C), each with a small overhang tab. Comparing segments shows how temperature affects surface finish, stringing, and overhang quality.</p>
+<h3 style="font-size:0.95rem;margin:14px 0 8px;">Slicer setup</h3>
+<p>Add a temperature change at each height:</p>
+<ul style="margin:0 0 12px 20px;">
+  <li>Z 3\u201313mm: 220\u00b0C &nbsp; Z 13\u201323mm: 215\u00b0C &nbsp; Z 23\u201333mm: 210\u00b0C</li>
+  <li>Z 33\u201343mm: 205\u00b0C &nbsp; Z 43\u201353mm: 200\u00b0C &nbsp; Z 53\u201363mm: 195\u00b0C</li>
+</ul>
+<p>In OrcaSlicer/PrusaSlicer: use "Change filament temperature at layer". In Cura: use the ChangeAtZ plugin.</p>
+<h3 style="font-size:0.95rem;margin:14px 0 8px;">Reading the result</h3>
+<p>Find the segment with a flat overhang tab, no stringing, and smooth walls. Too hot = stringing and drooping. Too cold = rough surface and weak layer adhesion.</p>''',
+        'related': 'https://print3dbuddy.com/posts/pla-vs-petg-vs-abs-which-filament-for-beginners/',
+        'related_label': 'Filament comparison guide',
+    },
+]
+
+
+@app.route('/test-prints')
+def test_prints():
+    return render_template('test_prints.html', user=get_current_user(), prints=TEST_PRINTS)
+
+
 # ── STL Downloads ─────────────────────────────────────────────────────────────
 
 STL_FILES = {

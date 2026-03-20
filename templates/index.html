@@ -1,55 +1,99 @@
 {% extends "base.html" %}
-{% block title %}Free 3D Printing Tools{% endblock %}
+{% block title %}Services - Tools & Test Prints{% endblock %}
 {% block content %}
 
-<div style="text-align:center; padding: 48px 0 32px;">
-  <h1 style="font-size:2rem; font-weight:800; margin-bottom:12px;">Free 3D Printing Tools</h1>
-  <p style="color:var(--muted); font-size:1.1rem; max-width:520px; margin:0 auto 28px;">
-    Calculators and guides to help you get better prints, faster. Free to try - no credit card needed.
+<div style="text-align:center; padding:40px 0 32px;">
+  <h1 style="font-size:2rem; font-weight:800; margin-bottom:10px;">Print3DBuddy Services</h1>
+  <p style="color:var(--muted); font-size:1.05rem; max-width:520px; margin:0 auto 24px;">
+    Calculators, cheat sheets, and calibration test prints to help you get better results faster.
   </p>
   {% if not user %}
     <a href="/register" class="btn" style="margin-right:12px;">Get started free</a>
     <a href="/login" class="btn btn-outline">Log in</a>
   {% else %}
-    <a href="/dashboard" class="btn">Go to my tools</a>
+    <a href="/dashboard" class="btn">My dashboard &rarr;</a>
   {% endif %}
 </div>
 
-<div class="tool-grid">
+<h2 style="font-size:1.2rem; font-weight:700; margin-bottom:6px;">&#129518; Calculators &amp; Tools</h2>
+<p style="color:var(--muted); font-size:0.9rem; margin-bottom:18px;">Free to try (3 uses) &mdash; unlimited with a paid account.</p>
+
+<div class="tool-grid" style="margin-top:0;">
   <div class="tool-card">
-    <div class="tool-icon">🧮</div>
+    <div class="tool-icon">&#129518;</div>
     <h3>Filament Cost Calculator</h3>
-    <p>Enter your spool price, weight, and print weight to find out exactly what each print costs you.</p>
+    <p>Find out exactly what each print costs in filament and electricity.</p>
     <a href="{% if user %}/tools/filament-cost{% else %}/register{% endif %}" class="btn">Use tool</a>
   </div>
   <div class="tool-card">
-    <div class="tool-icon">⚙️</div>
+    <div class="tool-icon">&#9881;&#65039;</div>
     <h3>Print Settings Cheat Sheet</h3>
-    <p>Pick your material and extruder type. Get recommended temperature, speed, retraction, and cooling settings instantly.</p>
+    <p>Pick your material and extruder type. Get recommended temperature, speed, and retraction instantly.</p>
     <a href="{% if user %}/tools/print-settings{% else %}/register{% endif %}" class="btn">Use tool</a>
   </div>
   <div class="tool-card">
-    <div class="tool-icon">🖥️</div>
+    <div class="tool-icon">&#128421;&#65039;</div>
     <h3>Slicer Recommender</h3>
-    <p>Answer a few questions about your printer and goals. Get a personalised slicer recommendation.</p>
+    <p>Answer a few questions and get a personalised slicer recommendation.</p>
     <a href="{% if user %}/tools/slicer-recommender{% else %}/register{% endif %}" class="btn">Use tool</a>
   </div>
   <div class="tool-card">
-    <div class="tool-icon">📐</div>
+    <div class="tool-icon">&#128208;</div>
     <h3>STL Filament Estimator</h3>
-    <p>Upload an STL file and get an accurate filament weight, length, and cost estimate before you even open your slicer.</p>
+    <p>Upload an STL to get an accurate filament weight, length, and cost estimate.</p>
     <a href="{% if user %}/tools/stl-estimator{% else %}/register{% endif %}" class="btn">Use tool</a>
   </div>
 </div>
 
-<div style="background:var(--bg-alt); border:1px solid var(--border); border-radius:10px; padding:28px; margin-top:40px; text-align:center;">
-  <h2 style="margin-bottom:8px;">How it works</h2>
-  <p style="color:var(--muted); margin-bottom:20px;">Free accounts get 3 uses across all tools. After that, unlock unlimited access for just £2/month or £5 one-time.</p>
-  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; text-align:left; max-width:600px; margin:0 auto;">
-    <div><strong>1. Register free</strong><p style="color:var(--muted);font-size:0.9rem;">No card needed</p></div>
-    <div><strong>2. Try the tools</strong><p style="color:var(--muted);font-size:0.9rem;">3 free uses</p></div>
-    <div><strong>3. Upgrade if you like it</strong><p style="color:var(--muted);font-size:0.9rem;">£2/mo or £5 once</p></div>
+<h2 style="font-size:1.2rem; font-weight:700; margin-top:44px; margin-bottom:6px;">&#128424; Calibration Test Prints</h2>
+<p style="color:var(--muted); font-size:0.9rem; margin-bottom:18px;">Five calibration prints with full guides and STL downloads &mdash; available to paid members.</p>
+
+<div class="tool-grid" style="margin-top:0;">
+  <div class="tool-card">
+    <div class="tool-icon">&#128208;</div>
+    <h3>Overhang Test</h3>
+    <p>Find your printer's maximum overhang angle. 11 fins from 20&deg; to 70&deg;.</p>
+    <a href="/test-prints#overhang-test" class="btn btn-outline">View</a>
   </div>
+  <div class="tool-card">
+    <div class="tool-icon">&#128260;</div>
+    <h3>Retraction / Stringing Test</h3>
+    <p>Dial in retraction and eliminate stringing. 7 towers, instant results.</p>
+    <a href="/test-prints#retraction-test" class="btn btn-outline">View</a>
+  </div>
+  <div class="tool-card">
+    <div class="tool-icon">&#127774;</div>
+    <h3>Bridging Test</h3>
+    <p>Find the longest span your printer can bridge without supports.</p>
+    <a href="/test-prints#bridging-test" class="btn btn-outline">View</a>
+  </div>
+  <div class="tool-card">
+    <div class="tool-icon">&#9633;</div>
+    <h3>First Layer Calibration</h3>
+    <p>Get your Z offset right with a simple 5-minute grid print.</p>
+    <a href="/test-prints#first-layer-test" class="btn btn-outline">View</a>
+  </div>
+  <div class="tool-card">
+    <div class="tool-icon">&#127777;&#65039;</div>
+    <h3>Temperature Tower</h3>
+    <p>Find the ideal printing temperature for any filament brand.</p>
+    <a href="/test-prints#temp-tower" class="btn btn-outline">View</a>
+  </div>
+</div>
+
+<div style="background:var(--bg-alt); border:1px solid var(--border); border-radius:10px; padding:28px; margin-top:40px; text-align:center;">
+  <h2 style="margin-bottom:8px;">Pricing</h2>
+  <p style="color:var(--muted); margin-bottom:20px;">Free accounts get 3 tool uses. Upgrade for unlimited tools, all test print guides, and STL downloads.</p>
+  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; text-align:left; max-width:600px; margin:0 auto 20px;">
+    <div><strong>1. Register free</strong><p style="color:var(--muted);font-size:0.9rem;margin-top:4px;">No card needed</p></div>
+    <div><strong>2. Try the tools</strong><p style="color:var(--muted);font-size:0.9rem;margin-top:4px;">3 free uses</p></div>
+    <div><strong>3. Upgrade when ready</strong><p style="color:var(--muted);font-size:0.9rem;margin-top:4px;">&pound;2/mo or &pound;5 once</p></div>
+  </div>
+  {% if not user %}
+  <a href="/register" class="btn">Get started free &rarr;</a>
+  {% else %}
+  <a href="/upgrade" class="btn">Upgrade now &rarr;</a>
+  {% endif %}
 </div>
 
 {% endblock %}

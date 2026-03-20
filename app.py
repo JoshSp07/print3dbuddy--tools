@@ -851,6 +851,24 @@ def download_stl(slug):
     return redirect(f'https://print3dbuddy.com/static/stl/{filename}')
 
 
+@app.route('/sitemap.xml')
+def sitemap():
+    from flask import Response
+    from datetime import date
+    today = date.today().strftime('%Y-%m-%d')
+    urls = [
+        '/', '/test-prints', '/register', '/login', '/upgrade',
+        '/tools/filament-cost', '/tools/print-settings',
+        '/tools/slicer-recommender', '/tools/stl-estimator',
+    ]
+    xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    for url in urls:
+        xml += f'  <url><loc>https://tools.print3dbuddy.com{url}</loc><lastmod>{today}</lastmod></url>\n'
+    xml += '</urlset>\n'
+    return Response(xml, mimetype='application/xml')
+
+
 init_db()
 
 if __name__ == '__main__':

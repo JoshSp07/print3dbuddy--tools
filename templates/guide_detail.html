@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}{{ guide.title }}{% endblock %}
+{% block content %}
+
+<style>
+  .guide-wrap { max-width: 820px; }
+  .guide-header { margin-bottom: 28px; padding-bottom: 20px; border-bottom: 2px solid var(--border); }
+  .guide-tag { display: inline-block; background: #fff3ed; color: var(--accent); font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+  .guide-header h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; }
+  .guide-header p { color: var(--muted); font-size: 1rem; max-width: 600px; }
+
+  /* Guide content styles — distinct from article prose */
+  .guide-content h2 { font-size: 1.15rem; font-weight: 700; margin: 32px 0 12px; padding: 8px 14px; background: var(--dark); color: #fff; border-radius: 6px; }
+  .guide-content h3 { font-size: 1rem; font-weight: 700; margin: 22px 0 8px; color: var(--accent); border-left: 3px solid var(--accent); padding-left: 10px; }
+  .guide-content p { font-size: 0.92rem; color: var(--text); margin-bottom: 12px; line-height: 1.65; }
+  .guide-content ul, .guide-content ol { padding-left: 20px; margin-bottom: 14px; font-size: 0.92rem; line-height: 1.7; }
+  .guide-content li { margin-bottom: 4px; }
+
+  /* Settings tables */
+  .guide-content table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-bottom: 20px; }
+  .guide-content th { background: var(--dark); color: #fff; padding: 8px 12px; text-align: left; font-weight: 600; }
+  .guide-content td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  .guide-content tr:nth-child(even) td { background: var(--bg-alt); }
+
+  /* Callout boxes */
+  .guide-content .tip { background: #f0fdf4; border-left: 4px solid #22c55e; padding: 12px 16px; border-radius: 0 6px 6px 0; margin-bottom: 16px; font-size: 0.9rem; }
+  .guide-content .tip strong { color: #166534; }
+  .guide-content .warn { background: #fffbeb; border-left: 4px solid #f59e0b; padding: 12px 16px; border-radius: 0 6px 6px 0; margin-bottom: 16px; font-size: 0.9rem; }
+  .guide-content .warn strong { color: #92400e; }
+
+  /* Checklist */
+  .guide-content .checklist { list-style: none; padding: 0; margin-bottom: 16px; }
+  .guide-content .checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+  .guide-content .checklist li:last-child { border-bottom: none; }
+  .guide-content .checklist li::before { content: "☐"; font-size: 1rem; color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+
+  .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--muted); margin-bottom: 24px; }
+  .back-link:hover { color: var(--accent); }
+</style>
+
+<div class="guide-wrap">
+
+  <a href="/guides" class="back-link">&#8592; All Quick Guides</a>
+
+  {% if not user or not user.is_paid %}
+  <div style="background:#fff8f5; border:2px solid var(--accent); border-radius:10px; padding:24px; text-align:center;">
+    <div style="font-size:2.5rem; margin-bottom:12px;">&#128274;</div>
+    <h2 style="font-size:1.3rem; margin-bottom:8px;">This guide is for paid members</h2>
+    <p style="color:var(--muted); margin-bottom:20px;">Get access to all quick guides, calibration test prints, and unlimited tools for &pound;2/month or &pound;5 one-time.</p>
+    {% if user %}
+    <a href="/upgrade" class="btn">Upgrade now &rarr;</a>
+    {% else %}
+    <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+      <a href="/register" class="btn">Register free</a>
+      <a href="/login" class="btn btn-outline">Log in</a>
+    </div>
+    {% endif %}
+  </div>
+  {% else %}
+
+  <div class="guide-header">
+    <span class="guide-tag">{{ guide.tag }}</span>
+    <h1>{{ guide.title }}</h1>
+    <p>{{ guide.tagline }}</p>
+  </div>
+
+  <div class="guide-content">
+    {{ guide.content|safe }}
+  </div>
+
+  {% endif %}
+
+</div>
+
+{% endblock %}

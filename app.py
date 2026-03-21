@@ -825,7 +825,7 @@ TEST_PRINTS = [
         'title': 'Flow Rate Test',
         'tagline': 'Dial in your extrusion multiplier for clean, accurate prints',
         'tag': 'Flow Rate',
-        'summary': 'Five flat tiles labelled 90% to 110% — each sliced with its corresponding flow rate in the slicer. Print all five, compare the top surfaces, and the smoothest tile with no gaps or ridges tells you your correct extrusion multiplier. Takes about 20 minutes and removes the guesswork from flow calibration.',
+        'summary': 'Five flat tiles labelled 90% to 110% - each sliced with its corresponding flow rate in the slicer. Print all five, compare the top surfaces, and the smoothest tile with no gaps or ridges tells you your correct extrusion multiplier. Takes about 20 minutes and removes the guesswork from flow calibration.',
         'guide': '''<h3 style="font-size:0.95rem;margin:0 0 8px;">What it tests</h3>
 <p>5 flat tiles (30x30x4mm), labelled 90% through 110%. Each one is sliced with a different flow rate (extrusion multiplier) so you can compare results side by side.</p>
 <h3 style="font-size:0.95rem;margin:14px 0 8px;">Slicer setup</h3>
@@ -836,8 +836,8 @@ TEST_PRINTS = [
 </ol>
 <h3 style="font-size:0.95rem;margin:14px 0 8px;">Reading the result</h3>
 <ul style="margin:0 0 0 20px;">
-  <li><strong>Gaps or rough top surface:</strong> flow too low — move up one tile</li>
-  <li><strong>Ridges, blobbing, or raised seam:</strong> flow too high — move down one tile</li>
+  <li><strong>Gaps or rough top surface:</strong> flow too low - move up one tile</li>
+  <li><strong>Ridges, blobbing, or raised seam:</strong> flow too high - move down one tile</li>
   <li><strong>Smooth, flat, consistent surface:</strong> that is your correct flow rate</li>
 </ul>
 <p style="margin-top:10px;">Dial in to the nearest 1% from there. Most filaments land between 95-100%.</p>''',
@@ -849,7 +849,7 @@ TEST_PRINTS = [
         'title': 'Ironing Test',
         'tagline': 'Find the right ironing settings for glass-smooth top surfaces',
         'tag': 'Ironing',
-        'summary': 'Four flat tiles — one with no ironing as a baseline, then three with ironing enabled at 10%, 15%, and 20% flow. Split them in your slicer, assign the settings, and print all four. The tile with the smoothest, most glossy top surface is your ideal ironing flow rate.',
+        'summary': 'Four flat tiles - one with no ironing as a baseline, then three with ironing enabled at 10%, 15%, and 20% flow. Split them in your slicer, assign the settings, and print all four. The tile with the smoothest, most glossy top surface is your ideal ironing flow rate.',
         'guide': '''<h3 style="font-size:0.95rem;margin:0 0 8px;">What it tests</h3>
 <p>4 flat tiles (40x40x3mm). Tile 1 is printed without ironing as a baseline. Tiles 2-4 have ironing enabled at increasing flow rates so you can see the difference directly.</p>
 <h3 style="font-size:0.95rem;margin:14px 0 8px;">Slicer setup</h3>
@@ -863,8 +863,8 @@ TEST_PRINTS = [
 <ul style="margin:0 0 0 20px;">
   <li><strong>Shiny, smooth, flat surface:</strong> correct setting</li>
   <li><strong>Still looks rough or uneven:</strong> try a higher flow or slower speed</li>
-  <li><strong>Grooves or lines visible:</strong> spacing too wide — reduce ironing line spacing in slicer</li>
-  <li><strong>Over-extruded ridges:</strong> flow too high — drop by 5%</li>
+  <li><strong>Grooves or lines visible:</strong> spacing too wide - reduce ironing line spacing in slicer</li>
+  <li><strong>Over-extruded ridges:</strong> flow too high - drop by 5%</li>
 </ul>
 <p style="margin-top:10px;">Most PLA lands at 10-15% flow. PETG often needs 15-20%. Works best on flat top surfaces.</p>''',
         'related': 'https://print3dbuddy.com/posts/3d-printing-ironing-guide/',
@@ -946,7 +946,7 @@ QUICK_GUIDES = [
   <li>Pull filament firmly and quickly straight out.</li>
   <li>Repeat 3–5 times until the pulled tip comes out clean.</li>
 </ol>
-<div class="tip"><strong>Tip:</strong> Nylon filament works best for cold pulls — it's flexible enough to pull cleanly and grips debris well.</div>
+<div class="tip"><strong>Tip:</strong> Nylon filament works best for cold pulls - it's flexible enough to pull cleanly and grips debris well.</div>
 '''
     },
     {
@@ -954,7 +954,7 @@ QUICK_GUIDES = [
         'title': 'OrcaSlicer Quick Guide',
         'tagline': 'Key settings, calibration tools, and workflows for OrcaSlicer.',
         'tag': 'Software',
-        'icon': '🦭',
+        'icon': '🖥',
         'covers': ['First-time setup', 'Key print settings explained', 'Built-in calibration tools', 'Supports and multi-plate', 'Recommended profiles'],
         'content': '''
 <h2>First-Time Setup</h2>
@@ -963,7 +963,7 @@ QUICK_GUIDES = [
   <li>Open OrcaSlicer → Printer icon top-left → Add Printer.</li>
   <li>Select your printer from the list, or choose a generic profile (FDM Generic).</li>
   <li>Set your nozzle diameter (usually 0.4mm).</li>
-  <li>Set your build volume — check your printer specs if unsure.</li>
+  <li>Set your build volume - check your printer specs if unsure.</li>
 </ol>
 <h3>Add a Filament Profile</h3>
 <ol>
@@ -996,7 +996,7 @@ QUICK_GUIDES = [
   <tr><td>Retraction Test</td><td>Retraction distance</td><td>When stringing appears</td></tr>
   <tr><td>Max Volumetric Speed</td><td>Highest reliable flow rate</td><td>When pushing for speed</td></tr>
 </table>
-<div class="tip"><strong>Tip:</strong> Run Flow Rate first, then Pressure Advance. Order matters — PA calibration assumes flow rate is already correct.</div>
+<div class="tip"><strong>Tip:</strong> Run Flow Rate first, then Pressure Advance. Order matters - PA calibration assumes flow rate is already correct.</div>
 
 <h2>Supports</h2>
 <table>
@@ -1004,13 +1004,13 @@ QUICK_GUIDES = [
   <tr><td>Support type</td><td>Tree (auto) for organic shapes, Normal for flat overhangs</td></tr>
   <tr><td>Threshold angle</td><td>Set 5° below your tested overhang limit</td></tr>
   <tr><td>Z distance</td><td>0.2mm (PLA), 0.25mm (PETG)</td></tr>
-  <tr><td>Interface layers</td><td>2–3 layers, 0.2mm spacing — makes removal much cleaner</td></tr>
+  <tr><td>Interface layers</td><td>2–3 layers, 0.2mm spacing - makes removal much cleaner</td></tr>
   <tr><td>Support on build plate only</td><td>Enable to avoid supports mid-air on complex geometry</td></tr>
 </table>
 
 <h2>Multi-Plate Printing</h2>
 <ol>
-  <li>Add objects to the plate normally — OrcaSlicer auto-arranges.</li>
+  <li>Add objects to the plate normally - OrcaSlicer auto-arranges.</li>
   <li>To add a second plate: click "+" next to the plate tab at the bottom.</li>
   <li>Objects can have different settings per-plate (useful for different materials).</li>
   <li>Slice All Plates to process everything at once before exporting.</li>
@@ -1029,7 +1029,7 @@ QUICK_GUIDES = [
 <h3>Configuration Wizard</h3>
 <ol>
   <li>First launch opens the Configuration Wizard automatically.</li>
-  <li>Select your printer — most Prusa, Creality, Bambu, and generic printers are listed.</li>
+  <li>Select your printer - most Prusa, Creality, Bambu, and generic printers are listed.</li>
   <li>Choose your nozzle diameter and build volume.</li>
   <li>Select filament profiles to install (PLA, PETG, ABS etc.).</li>
 </ol>
@@ -1038,9 +1038,9 @@ QUICK_GUIDES = [
 <h2>The Three Profile Types</h2>
 <table>
   <tr><th>Profile Type</th><th>What It Controls</th><th>Where to Find It</th></tr>
-  <tr><td>Print Settings</td><td>Layer height, infill, speeds, supports</td><td>Left dropdown — "Print settings"</td></tr>
-  <tr><td>Filament Settings</td><td>Temperatures, cooling, retraction</td><td>Middle dropdown — "Filament"</td></tr>
-  <tr><td>Printer Settings</td><td>Build volume, nozzle, bed shape</td><td>Right dropdown — "Printer"</td></tr>
+  <tr><td>Print Settings</td><td>Layer height, infill, speeds, supports</td><td>Left dropdown - "Print settings"</td></tr>
+  <tr><td>Filament Settings</td><td>Temperatures, cooling, retraction</td><td>Middle dropdown - "Filament"</td></tr>
+  <tr><td>Printer Settings</td><td>Build volume, nozzle, bed shape</td><td>Right dropdown - "Printer"</td></tr>
 </table>
 <p>Changes to a profile without saving create an unsaved override (marked with *). Save profiles via the floppy disk icon.</p>
 
@@ -1064,7 +1064,7 @@ QUICK_GUIDES = [
   <li>Red brush = block supports on that face.</li>
   <li>Useful for models where auto supports are excessive or placed wrong.</li>
 </ol>
-<div class="tip"><strong>Tip:</strong> Combine auto supports with painting — let PrusaSlicer generate first, then paint over problem areas.</div>
+<div class="tip"><strong>Tip:</strong> Combine auto supports with painting - let PrusaSlicer generate first, then paint over problem areas.</div>
 
 <h2>Variable Layer Height</h2>
 <p>Prints flat sections fast at 0.3mm and detailed sections slow at 0.1mm automatically.</p>
@@ -1101,7 +1101,7 @@ QUICK_GUIDES = [
   <li>Settings → Printers → Add Printer.</li>
   <li>Search for your printer model. If not listed, choose "Custom FFF Printer".</li>
   <li>For custom: set X/Y/Z build volume, nozzle diameter, and heated bed (yes/no).</li>
-  <li>Set the machine start/end G-code if your printer requires it — check manufacturer docs.</li>
+  <li>Set the machine start/end G-code if your printer requires it - check manufacturer docs.</li>
 </ol>
 <div class="tip"><strong>Tip:</strong> Cura has profiles for 500+ printers. Check for your model before creating a custom one.</div>
 
@@ -1109,7 +1109,7 @@ QUICK_GUIDES = [
 <table>
   <tr><th>Mode</th><th>When to Use</th></tr>
   <tr><td>Recommended (Simple)</td><td>Quick prints, familiar models, when you just want it to work</td></tr>
-  <tr><td>Custom</td><td>Any time quality matters or you're troubleshooting — gives access to all 400+ settings</td></tr>
+  <tr><td>Custom</td><td>Any time quality matters or you're troubleshooting - gives access to all 400+ settings</td></tr>
 </table>
 <p>Switch between modes via the button at the top of the settings panel. Custom mode remembers your settings between sessions.</p>
 
@@ -1122,7 +1122,7 @@ QUICK_GUIDES = [
   <tr><td>Infill Density</td><td>20%</td><td>15% decorative, 30–40% structural</td></tr>
   <tr><td>Infill Pattern</td><td>Gyroid</td><td>Or "Lines" for fastest print time</td></tr>
   <tr><td>Print Speed</td><td>50mm/s</td><td>Reduce to 30–40 for better quality</td></tr>
-  <tr><td>Flow</td><td>100%</td><td>Calibrate per filament — often 97–100%</td></tr>
+  <tr><td>Flow</td><td>100%</td><td>Calibrate per filament - often 97–100%</td></tr>
   <tr><td>Retraction Distance</td><td>5–6mm Bowden, 1–2mm DD</td><td>Reduce if grinding occurs</td></tr>
   <tr><td>Support Z Distance</td><td>0.2mm</td><td>Increase to 0.25 for PETG</td></tr>
 </table>
@@ -1130,7 +1130,7 @@ QUICK_GUIDES = [
 <h2>Useful Plugins (Marketplace)</h2>
 <table>
   <tr><th>Plugin</th><th>What It Does</th></tr>
-  <tr><td>ChangeAtZ</td><td>Change any setting at a specific layer height — essential for temp towers</td></tr>
+  <tr><td>ChangeAtZ</td><td>Change any setting at a specific layer height - essential for temp towers</td></tr>
   <tr><td>Mesh Tools</td><td>Fix broken STL geometry before slicing</td></tr>
   <tr><td>Auto-Orientation</td><td>Automatically rotates models for best print orientation</td></tr>
   <tr><td>Calibration Shapes</td><td>Generates calibration cubes, towers, and test prints inside Cura</td></tr>
@@ -1165,7 +1165,7 @@ QUICK_GUIDES = [
   <tr><td>Retraction (DD)</td><td>0.5–1mm</td></tr>
   <tr><td>Retraction (Bowden)</td><td>4–6mm</td></tr>
   <tr><td>Heat resistance</td><td>~55–60°C</td></tr>
-  <tr><td>Moisture sensitive</td><td>Low — but store sealed for best results</td></tr>
+  <tr><td>Moisture sensitive</td><td>Low - but store sealed for best results</td></tr>
 </table>
 <div class="tip"><strong>Best for:</strong> Decorative prints, miniatures, household items, learning projects. Anything that won't see heat or heavy stress.</div>
 
@@ -1179,7 +1179,7 @@ QUICK_GUIDES = [
   <tr><td>Retraction (DD)</td><td>1–2mm</td></tr>
   <tr><td>Retraction (Bowden)</td><td>5–7mm</td></tr>
   <tr><td>Heat resistance</td><td>~75–80°C</td></tr>
-  <tr><td>Moisture sensitive</td><td>High — dry before use, seal when storing</td></tr>
+  <tr><td>Moisture sensitive</td><td>High - dry before use, seal when storing</td></tr>
 </table>
 <div class="warn"><strong>Watch out:</strong> PETG sticks aggressively to glass beds. Use PEI or add a thin release layer (glue stick).</div>
 
@@ -1189,7 +1189,7 @@ QUICK_GUIDES = [
   <tr><td>Nozzle temp</td><td>230–250°C</td></tr>
   <tr><td>Bed temp</td><td>100–110°C</td></tr>
   <tr><td>Cooling fan</td><td>0–20% maximum</td></tr>
-  <tr><td>Enclosure</td><td>Required — warps badly in drafts</td></tr>
+  <tr><td>Enclosure</td><td>Required - warps badly in drafts</td></tr>
   <tr><td>Heat resistance</td><td>~90–100°C</td></tr>
   <tr><td>Moisture sensitive</td><td>Medium</td></tr>
 </table>
@@ -1203,7 +1203,7 @@ QUICK_GUIDES = [
   <tr><td>Cooling fan</td><td>0–20%</td></tr>
   <tr><td>Enclosure</td><td>Required</td></tr>
   <tr><td>Heat resistance</td><td>~95–100°C</td></tr>
-  <tr><td>UV resistance</td><td>Excellent — better than ABS outdoors</td></tr>
+  <tr><td>UV resistance</td><td>Excellent - better than ABS outdoors</td></tr>
 </table>
 <div class="tip"><strong>Best for:</strong> Outdoor use, UV exposure, as a better alternative to ABS for most applications.</div>
 
@@ -1213,9 +1213,9 @@ QUICK_GUIDES = [
   <tr><td>Nozzle temp</td><td>220–240°C</td></tr>
   <tr><td>Bed temp</td><td>30–60°C</td></tr>
   <tr><td>Cooling fan</td><td>30%</td></tr>
-  <tr><td>Print speed</td><td>20–30mm/s — slow is essential</td></tr>
-  <tr><td>Retraction</td><td>Minimal or off — causes jams on Bowden</td></tr>
-  <tr><td>Direct drive</td><td>Strongly preferred — Bowden very difficult</td></tr>
+  <tr><td>Print speed</td><td>20–30mm/s - slow is essential</td></tr>
+  <tr><td>Retraction</td><td>Minimal or off - causes jams on Bowden</td></tr>
+  <tr><td>Direct drive</td><td>Strongly preferred - Bowden very difficult</td></tr>
 </table>
 <div class="warn"><strong>Watch out:</strong> TPU jams in Bowden tubes easily. If using Bowden, disable retraction entirely and print very slowly.</div>
 
@@ -1226,7 +1226,7 @@ QUICK_GUIDES = [
   <tr><td>Bed temp</td><td>70–90°C</td></tr>
   <tr><td>Cooling fan</td><td>20–50%</td></tr>
   <tr><td>Enclosure</td><td>Recommended</td></tr>
-  <tr><td>Moisture sensitive</td><td>Very high — must be bone-dry before printing</td></tr>
+  <tr><td>Moisture sensitive</td><td>Very high - must be bone-dry before printing</td></tr>
 </table>
 <div class="warn"><strong>Critical:</strong> Nylon absorbs moisture faster than any other common filament. Dry at 70°C for 8+ hours before every print.</div>
 
@@ -1244,11 +1244,11 @@ QUICK_GUIDES = [
 <h2>Storage Guide</h2>
 <table>
   <tr><th>Material</th><th>Storage Priority</th><th>Dry If:</th></tr>
-  <tr><td>PLA</td><td>Low — sealed bag is fine</td><td>Popping sounds or rough surface</td></tr>
-  <tr><td>PETG</td><td>High — absorbs fast</td><td>Any stringing or bubbling</td></tr>
+  <tr><td>PLA</td><td>Low - sealed bag is fine</td><td>Popping sounds or rough surface</td></tr>
+  <tr><td>PETG</td><td>High - absorbs fast</td><td>Any stringing or bubbling</td></tr>
   <tr><td>ABS</td><td>Medium</td><td>Popping or splitting layers</td></tr>
   <tr><td>TPU</td><td>High</td><td>Stringing or rough surface</td></tr>
-  <tr><td>Nylon</td><td>Critical — dry before every use</td><td>Always dry before printing</td></tr>
+  <tr><td>Nylon</td><td>Critical - dry before every use</td><td>Always dry before printing</td></tr>
 </table>
 '''
     },
@@ -1261,17 +1261,17 @@ QUICK_GUIDES = [
         'covers': ['Step-by-step calibration order', 'E-steps / rotation distance', 'Bed levelling and Z offset', 'Flow rate and pressure advance', 'When to re-calibrate'],
         'content': '''
 <h2>Why Order Matters</h2>
-<p>Each calibration step builds on the last. Calibrating flow rate before e-steps means you're compensating for a hardware problem with a software value — and it'll drift every time you change anything. Do it in this order, every time.</p>
+<p>Each calibration step builds on the last. Calibrating flow rate before e-steps means you're compensating for a hardware problem with a software value - and it'll drift every time you change anything. Do it in this order, every time.</p>
 
 <h2>The Calibration Checklist</h2>
 <ul class="checklist">
-  <li><strong>Step 1: E-steps / Rotation Distance</strong> — How many motor steps push exactly 100mm of filament. Do this first on a new printer or after changing the extruder.</li>
-  <li><strong>Step 2: Bed Levelling</strong> — Ensure the bed is physically flat and level relative to the gantry. Manual: paper method. Auto: run BLTouch/CR Touch mesh levelling.</li>
-  <li><strong>Step 3: Z Offset</strong> — Fine-tune the nozzle-to-bed gap. Too close = elephant foot, too far = won't stick. Adjust in 0.05mm steps.</li>
-  <li><strong>Step 4: Temperature Tower</strong> — Find the ideal nozzle temperature for your specific filament brand and colour. Run once per new filament.</li>
-  <li><strong>Step 5: Flow Rate / Extrusion Multiplier</strong> — Calibrate how much filament actually comes out vs what the slicer expects. Calibrate per filament profile.</li>
-  <li><strong>Step 6: Pressure Advance / Linear Advance</strong> — Compensates for filament pressure lag in corners. Run after any significant speed or temperature change.</li>
-  <li><strong>Step 7: Retraction</strong> — Tune retraction distance and speed to eliminate stringing. Run after pressure advance is set.</li>
+  <li><strong>Step 1: E-steps / Rotation Distance</strong> - How many motor steps push exactly 100mm of filament. Do this first on a new printer or after changing the extruder.</li>
+  <li><strong>Step 2: Bed Levelling</strong> - Ensure the bed is physically flat and level relative to the gantry. Manual: paper method. Auto: run BLTouch/CR Touch mesh levelling.</li>
+  <li><strong>Step 3: Z Offset</strong> - Fine-tune the nozzle-to-bed gap. Too close = elephant foot, too far = won't stick. Adjust in 0.05mm steps.</li>
+  <li><strong>Step 4: Temperature Tower</strong> - Find the ideal nozzle temperature for your specific filament brand and colour. Run once per new filament.</li>
+  <li><strong>Step 5: Flow Rate / Extrusion Multiplier</strong> - Calibrate how much filament actually comes out vs what the slicer expects. Calibrate per filament profile.</li>
+  <li><strong>Step 6: Pressure Advance / Linear Advance</strong> - Compensates for filament pressure lag in corners. Run after any significant speed or temperature change.</li>
+  <li><strong>Step 7: Retraction</strong> - Tune retraction distance and speed to eliminate stringing. Run after pressure advance is set.</li>
 </ul>
 
 <h2>E-Steps Calibration</h2>
@@ -1291,7 +1291,7 @@ QUICK_GUIDES = [
   <tr><td>Lines don't stick / gaps visible</td><td>Lower Z offset -0.05mm</td></tr>
   <tr><td>Elephant foot on edges</td><td>Raise Z offset +0.05mm</td></tr>
   <tr><td>Circles look squished or oval</td><td>Raise Z offset +0.05mm</td></tr>
-  <tr><td>Lines slightly squished, separate, round circles</td><td>Correct — no adjustment needed</td></tr>
+  <tr><td>Lines slightly squished, separate, round circles</td><td>Correct - no adjustment needed</td></tr>
 </table>
 
 <h2>When to Re-Calibrate</h2>

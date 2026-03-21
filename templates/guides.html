@@ -45,9 +45,9 @@
     {% if user and user.is_paid %}
     <a href="/guides/{{ g.id }}" class="btn" style="text-align:center;">Open Guide &rarr;</a>
     {% elif user %}
-    <a href="/upgrade" class="btn btn-outline" style="text-align:center;">&#128274; Upgrade to unlock</a>
+    <a href="/upgrade" class="btn btn-outline" style="text-align:center;">&#9679; Upgrade to unlock</a>
     {% else %}
-    <a href="/register" class="btn btn-outline" style="text-align:center;">&#128274; Register to unlock</a>
+    <a href="/register" class="btn btn-outline" style="text-align:center;">&#9679; Register to unlock</a>
     {% endif %}
   </div>
 </div>

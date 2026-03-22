@@ -646,6 +646,208 @@ def stl_estimator():
     return render_template('tools/stl_estimator.html', user=user, result=result,
                            densities=MATERIAL_DENSITIES)
 
+# ── Tool 5: Nozzle Size Recommender ──────────────────────────────────────────
+
+NOZZLE_DB = {
+    ('detail', 'standard'): {
+        'size': '0.2mm', 'material': 'Brass',
+        'layer_height': '0.05–0.15mm',
+        'speed': '20–40mm/s',
+        'best_for': 'Miniatures, fine text, jewellery, intricate models',
+        'avoid': 'Large prints — very slow. Abrasive filaments will wear brass quickly.',
+        'notes': 'Requires a well-tuned printer with minimal play. Prone to clogging with low-quality filament. Dry your filament before printing.',
+    },
+    ('detail', 'abrasive'): {
+        'size': '0.4mm', 'material': 'Hardened steel',
+        'layer_height': '0.1–0.2mm',
+        'speed': '30–50mm/s',
+        'best_for': 'Detailed prints in carbon fibre or glass-filled filaments',
+        'avoid': 'Brass nozzles — abrasive materials destroy them within hours.',
+        'notes': 'Hardened steel is mandatory for CF/GF filaments. Expect slightly rougher surface finish than brass. Increase temperature by 5–10°C vs standard settings.',
+    },
+    ('standard', 'standard'): {
+        'size': '0.4mm', 'material': 'Brass',
+        'layer_height': '0.1–0.3mm',
+        'speed': '40–80mm/s',
+        'best_for': 'General purpose printing — the best all-rounder',
+        'avoid': 'Nothing specific — this is the safest default choice.',
+        'notes': 'The 0.4mm nozzle is the industry standard for good reason. Balances detail, speed, and reliability. Most slicer profiles default to this size.',
+    },
+    ('standard', 'abrasive'): {
+        'size': '0.4mm', 'material': 'Hardened steel',
+        'layer_height': '0.1–0.3mm',
+        'speed': '30–60mm/s',
+        'best_for': 'CF/GF/metal-filled filaments at standard quality',
+        'avoid': 'Brass — will wear out within a few hundred grams of abrasive filament.',
+        'notes': 'Hardened steel is non-negotiable for abrasive materials. Some grades of hardened steel have slightly lower thermal conductivity — bump temperature up 5°C if under-extruding.',
+    },
+    ('functional', 'standard'): {
+        'size': '0.4mm or 0.6mm', 'material': 'Brass',
+        'layer_height': '0.15–0.3mm',
+        'speed': '40–80mm/s',
+        'best_for': 'Brackets, mounts, enclosures, mechanical parts',
+        'avoid': '0.2mm for structural parts — too slow and marginal strength gain.',
+        'notes': 'A 0.6mm nozzle gives significantly stronger layer bonding for functional parts and is worth considering. Wall count matters more than infill for strength.',
+    },
+    ('functional', 'abrasive'): {
+        'size': '0.6mm', 'material': 'Hardened steel',
+        'layer_height': '0.2–0.35mm',
+        'speed': '30–60mm/s',
+        'best_for': 'Strong, wear-resistant functional parts in CF/GF filament',
+        'avoid': 'Anything smaller with abrasive filament — higher clog risk.',
+        'notes': 'CF and GF filaments produce very strong parts. The 0.6mm reduces clog risk with these materials. Combine with 3+ walls for best mechanical properties.',
+    },
+    ('large', 'standard'): {
+        'size': '0.6mm or 0.8mm', 'material': 'Brass',
+        'layer_height': '0.3–0.5mm',
+        'speed': '60–120mm/s',
+        'best_for': 'Large prototypes, terrain, props, vases, architectural models',
+        'avoid': 'Fine detail — layer lines will be very visible.',
+        'notes': 'Larger nozzles deposit more material per pass, dramatically cutting print time. A 0.8mm nozzle at 0.4mm layer height can be 4-5x faster than a 0.4mm nozzle. Great for drafts and large decorative pieces.',
+    },
+    ('large', 'abrasive'): {
+        'size': '0.8mm', 'material': 'Hardened steel',
+        'layer_height': '0.3–0.5mm',
+        'speed': '40–80mm/s',
+        'best_for': 'Large parts in abrasive materials — strongest possible output',
+        'avoid': 'Detail work — surface finish will be rough.',
+        'notes': 'Maximum throughput with abrasive filament. Hardened steel is essential. This combination produces extremely strong large parts quickly.',
+    },
+}
+
+@app.route('/tools/nozzle-recommender', methods=['GET', 'POST'])
+@login_required
+def nozzle_recommender():
+    user = get_current_user()
+    result = None
+    sel = {}
+    if request.method == 'POST':
+        if not can_use_tool(user):
+            flash('You have used all your free uses. Upgrade to continue.', 'warning')
+            return redirect(url_for('upgrade'))
+        purpose  = request.form.get('purpose', 'standard')
+        material = request.form.get('material', 'standard')
+        sel = {'purpose': purpose, 'material': material}
+        key = (purpose, material)
+        if key in NOZZLE_DB:
+            result = NOZZLE_DB[key]
+            if not user['is_paid']:
+                consume_use(user['id'])
+                user = get_current_user()
+        else:
+            flash('Please select valid options.', 'error')
+    return render_template('tools/nozzle_recommender.html', user=user, result=result, sel=sel)
+
+
+# ── Tool 6: Infill Density Recommender ───────────────────────────────────────
+
+INFILL_DB = {
+    ('decorative', 'pla'): {
+        'density': '5–10%', 'pattern': 'Lightning or Gyroid',
+        'walls': '2', 'top_bottom': '3 layers',
+        'notes': 'Decorative prints carry no load so minimal infill is fine. Lightning infill uses almost no material. Focus on wall count and top/bottom layers for a good surface finish rather than infill.',
+    },
+    ('decorative', 'petg'): {
+        'density': '5–10%', 'pattern': 'Lightning or Gyroid',
+        'walls': '2–3', 'top_bottom': '4 layers',
+        'notes': 'PETG is slightly more flexible than PLA so a little more infill helps maintain shape on larger prints. Still no need to go above 15% for display pieces.',
+    },
+    ('decorative', 'abs'): {
+        'density': '10–15%', 'pattern': 'Gyroid',
+        'walls': '3', 'top_bottom': '4 layers',
+        'notes': 'ABS can warp so slightly more infill helps internal stress distribution. Gyroid handles ABS shrinkage better than rectilinear patterns.',
+    },
+    ('decorative', 'tpu'): {
+        'density': '10–20%', 'pattern': 'Gyroid',
+        'walls': '2', 'top_bottom': '3 layers',
+        'notes': 'TPU decorative parts often benefit from some infill to maintain shape. Gyroid gives a consistent flex throughout the part.',
+    },
+    ('functional', 'pla'): {
+        'density': '20–40%', 'pattern': 'Gyroid or Cubic',
+        'walls': '3–4', 'top_bottom': '4–5 layers',
+        'notes': 'For brackets, mounts, and everyday functional parts. Walls contribute more to strength than infill — prioritise 4 walls over high infill %. Gyroid and Cubic distribute stress evenly in all directions.',
+    },
+    ('functional', 'petg'): {
+        'density': '20–35%', 'pattern': 'Gyroid',
+        'walls': '3–4', 'top_bottom': '4–5 layers',
+        'notes': 'PETG is tougher and more impact resistant than PLA, so you can often use slightly less infill for the same result. Excellent for parts exposed to moderate stress or outdoor use.',
+    },
+    ('functional', 'abs'): {
+        'density': '25–40%', 'pattern': 'Gyroid or Cubic',
+        'walls': '4', 'top_bottom': '5 layers',
+        'notes': 'ABS is great for functional parts needing heat resistance. Use an enclosure to prevent warping and delamination. Higher infill helps compensate for ABS\'s tendency to shrink.',
+    },
+    ('functional', 'tpu'): {
+        'density': '15–25%', 'pattern': 'Gyroid',
+        'walls': '2–3', 'top_bottom': '3 layers',
+        'notes': 'TPU functional parts like grips and gaskets benefit from gyroid infill which gives consistent, predictable flex. Higher infill makes the part stiffer — adjust to taste.',
+    },
+    ('structural', 'pla'): {
+        'density': '40–60%', 'pattern': 'Cubic or Honeycomb',
+        'walls': '4–5', 'top_bottom': '5–6 layers',
+        'notes': 'For high-load structural parts, wall count is more important than infill. 5 walls with 40% infill is stronger than 2 walls with 80% infill. Consider PETG or ABS for anything that will see heat or impact.',
+    },
+    ('structural', 'petg'): {
+        'density': '40–60%', 'pattern': 'Cubic or Gyroid',
+        'walls': '4–5', 'top_bottom': '5–6 layers',
+        'notes': 'PETG is the best common material for structural parts — tougher than PLA and more heat resistant. Combine with 5 walls and 50% infill for maximum strength.',
+    },
+    ('structural', 'abs'): {
+        'density': '40–60%', 'pattern': 'Cubic',
+        'walls': '5', 'top_bottom': '6 layers',
+        'notes': 'ABS structural parts need a fully enclosed printer to prevent warping and layer delamination. When printed correctly, ABS produces very strong, heat-resistant parts. Consider acetone smoothing to further increase layer bond strength.',
+    },
+    ('structural', 'tpu'): {
+        'density': '30–50%', 'pattern': 'Gyroid',
+        'walls': '4', 'top_bottom': '4 layers',
+        'notes': 'Structural TPU parts — like shock absorbers or vibration dampeners — need enough infill to resist compression fatigue. Gyroid is the best pattern for repeated loading.',
+    },
+    ('flexible', 'pla'): {
+        'density': '10–20%', 'pattern': 'Gyroid',
+        'walls': '2', 'top_bottom': '2–3 layers',
+        'notes': 'PLA is not naturally flexible, so low infill and thin walls are needed to achieve any give. For truly flexible parts, switch to TPU — PLA will snap rather than flex under real load.',
+    },
+    ('flexible', 'petg'): {
+        'density': '10–15%', 'pattern': 'Gyroid',
+        'walls': '2', 'top_bottom': '2 layers',
+        'notes': 'PETG has some natural give, making it better than PLA for semi-flexible parts. Low infill and Gyroid pattern maximises flexibility. Still not a substitute for TPU where real flex is required.',
+    },
+    ('flexible', 'abs'): {
+        'density': '10–15%', 'pattern': 'Gyroid',
+        'walls': '2', 'top_bottom': '2–3 layers',
+        'notes': 'ABS has low flexibility and is prone to cracking under repeated bending. Not recommended for genuinely flexible applications. Consider TPU instead.',
+    },
+    ('flexible', 'tpu'): {
+        'density': '10–20%', 'pattern': 'Gyroid',
+        'walls': '2', 'top_bottom': '2–3 layers',
+        'notes': 'TPU is the correct material for flexible parts. Gyroid infill gives the most consistent, even flex. Lower infill = softer. Higher infill = stiffer but still flexible. Avoid rectilinear infill as it creates stiff lines.',
+    },
+}
+
+@app.route('/tools/infill-recommender', methods=['GET', 'POST'])
+@login_required
+def infill_recommender():
+    user = get_current_user()
+    result = None
+    sel = {}
+    if request.method == 'POST':
+        if not can_use_tool(user):
+            flash('You have used all your free uses. Upgrade to continue.', 'warning')
+            return redirect(url_for('upgrade'))
+        use_case = request.form.get('use_case', 'functional')
+        material = request.form.get('material', 'pla')
+        sel = {'use_case': use_case, 'material': material}
+        key = (use_case, material)
+        if key in INFILL_DB:
+            result = INFILL_DB[key]
+            if not user['is_paid']:
+                consume_use(user['id'])
+                user = get_current_user()
+        else:
+            flash('Please select valid options.', 'error')
+    return render_template('tools/infill_recommender.html', user=user, result=result, sel=sel)
+
+
 # ── Stripe ────────────────────────────────────────────────────────────────────
 
 @app.route('/upgrade')

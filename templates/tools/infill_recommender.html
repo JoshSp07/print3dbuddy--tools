@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Infill Density Recommender{% endblock %}
+{% block content %}
+
+<div style="margin-bottom:8px;">
+  <a href="/dashboard" style="color:var(--muted); font-size:0.9rem;">&larr; Back to tools</a>
+</div>
+
+<h1 style="font-size:1.6rem; margin-bottom:4px;">Infill Density Recommender</h1>
+<p style="color:var(--muted); margin-bottom:4px;">Tell us how the part will be used and we will recommend infill density, pattern, and wall count.</p>
+
+{% if not user.is_paid %}
+<p style="margin-bottom:24px;"><span class="uses-badge">{{ user.uses_remaining }} free use{{ 's' if user.uses_remaining != 1 else '' }} remaining</span></p>
+{% else %}
+<p style="margin-bottom:24px;"><span class="uses-badge paid">Unlimited access</span></p>
+{% endif %}
+
+<div class="card">
+  <form method="POST">
+    <label for="use_case">How will the part be used?</label>
+    <select id="use_case" name="use_case" required>
+      <option value="">-- Select use case --</option>
+      <option value="decorative"  {% if sel.get('use_case') == 'decorative' %}selected{% endif %}>Decorative &mdash; display pieces, figurines, ornaments</option>
+      <option value="functional"  {% if sel.get('use_case') == 'functional' or not sel %}selected{% endif %}>Functional &mdash; brackets, mounts, handles, everyday parts</option>
+      <option value="structural"  {% if sel.get('use_case') == 'structural' %}selected{% endif %}>Structural &mdash; high-load, mechanical, safety-critical</option>
+      <option value="flexible"    {% if sel.get('use_case') == 'flexible' %}selected{% endif %}>Flexible &mdash; grips, gaskets, phone cases, dampeners</option>
+    </select>
+
+    <label for="material">Filament material</label>
+    <select id="material" name="material" required>
+      <option value="">-- Select material --</option>
+      <option value="pla"   {% if sel.get('material') == 'pla' or not sel %}selected{% endif %}>PLA / PLA+</option>
+      <option value="petg"  {% if sel.get('material') == 'petg' %}selected{% endif %}>PETG</option>
+      <option value="abs"   {% if sel.get('material') == 'abs' %}selected{% endif %}>ABS / ASA</option>
+      <option value="tpu"   {% if sel.get('material') == 'tpu' %}selected{% endif %}>TPU / Flexible</option>
+    </select>
+
+    <button type="submit" class="btn">Get recommendation</button>
+  </form>
+</div>
+
+{% if result %}
+<div class="result-box">
+  <h3>Recommended infill settings</h3>
+
+  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:20px;">
+    <div style="background:#fff; border:2px solid var(--accent); border-radius:10px; padding:18px; text-align:center;">
+      <p style="font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--muted); margin-bottom:6px;">Infill density</p>
+      <p style="font-size:1.5rem; font-weight:800; color:var(--accent); margin:0;">{{ result.density }}</p>
+    </div>
+    <div style="background:#fff; border:1px solid var(--border); border-radius:10px; padding:18px; text-align:center;">
+      <p style="font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--muted); margin-bottom:6px;">Pattern</p>
+      <p style="font-size:1rem; font-weight:800; color:var(--text); margin:0;">{{ result.pattern }}</p>
+    </div>
+    <div style="background:#fff; border:1px solid var(--border); border-radius:10px; padding:18px; text-align:center;">
+      <p style="font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--muted); margin-bottom:6px;">Walls</p>
+      <p style="font-size:1.5rem; font-weight:800; color:var(--text); margin:0;">{{ result.walls }}</p>
+    </div>
+  </div>
+
+  <div class="result-row">
+    <strong>Top &amp; bottom layers</strong>
+    <span>{{ result.top_bottom }}</span>
+  </div>
+
+  <div style="margin-top:16px; padding:14px; background:#fff; border-radius:6px; border:1px solid var(--border);">
+    <strong style="display:block; margin-bottom:6px;">Notes</strong>
+    <p style="color:var(--muted); font-size:0.93rem; margin:0; line-height:1.6;">{{ result.notes }}</p>
+  </div>
+</div>
+{% endif %}
+
+{% if not user.is_paid and user.uses_remaining == 0 %}
+<div style="background:#fff8f5; border:2px solid var(--accent); border-radius:10px; padding:24px; margin-top:24px; text-align:center;">
+  <h3 style="margin-bottom:8px;">You've used all your free uses</h3>
+  <p style="color:var(--muted); margin-bottom:16px;">Upgrade for unlimited access for &pound;5 one-time or &pound;2/month.</p>
+  <a href="/upgrade" class="btn">Upgrade now</a>
+</div>
+{% endif %}
+
+{% endblock %}

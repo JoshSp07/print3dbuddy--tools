@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Nozzle Size Recommender{% endblock %}
+{% block content %}
+
+<div style="margin-bottom:8px;">
+  <a href="/dashboard" style="color:var(--muted); font-size:0.9rem;">&larr; Back to tools</a>
+</div>
+
+<h1 style="font-size:1.6rem; margin-bottom:4px;">Nozzle Size Recommender</h1>
+<p style="color:var(--muted); margin-bottom:4px;">Tell us what you are printing and we will recommend the right nozzle size and material.</p>
+
+{% if not user.is_paid %}
+<p style="margin-bottom:24px;"><span class="uses-badge">{{ user.uses_remaining }} free use{{ 's' if user.uses_remaining != 1 else '' }} remaining</span></p>
+{% else %}
+<p style="margin-bottom:24px;"><span class="uses-badge paid">Unlimited access</span></p>
+{% endif %}
+
+<div class="card">
+  <form method="POST">
+    <label for="purpose">What are you primarily printing?</label>
+    <select id="purpose" name="purpose" required>
+      <option value="">-- Select purpose --</option>
+      <option value="detail"     {% if sel.get('purpose') == 'detail' %}selected{% endif %}>Fine detail &mdash; miniatures, fine text, jewellery</option>
+      <option value="standard"   {% if sel.get('purpose') == 'standard' or not sel %}selected{% endif %}>General purpose &mdash; everyday prints</option>
+      <option value="functional" {% if sel.get('purpose') == 'functional' %}selected{% endif %}>Functional parts &mdash; brackets, mounts, enclosures</option>
+      <option value="large"      {% if sel.get('purpose') == 'large' %}selected{% endif %}>Large or fast prints &mdash; prototypes, terrain, props</option>
+    </select>
+
+    <label for="material">Filament type</label>
+    <select id="material" name="material" required>
+      <option value="">-- Select filament type --</option>
+      <option value="standard"  {% if sel.get('material') == 'standard' or not sel %}selected{% endif %}>Standard &mdash; PLA, PETG, ABS, ASA, TPU</option>
+      <option value="abrasive"  {% if sel.get('material') == 'abrasive' %}selected{% endif %}>Abrasive &mdash; carbon fibre, glass-filled, metal-filled</option>
+    </select>
+
+    <button type="submit" class="btn">Get recommendation</button>
+  </form>
+</div>
+
+{% if result %}
+<div class="result-box">
+  <h3>Recommended nozzle</h3>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px;">
+    <div style="background:#fff; border:2px solid var(--accent); border-radius:10px; padding:20px; text-align:center;">
+      <p style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--muted); margin-bottom:6px;">Nozzle size</p>
+      <p style="font-size:1.8rem; font-weight:800; color:var(--accent); margin:0;">{{ result.size }}</p>
+    </div>
+    <div style="background:#fff; border:1px solid var(--border); border-radius:10px; padding:20px; text-align:center;">
+      <p style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--muted); margin-bottom:6px;">Nozzle material</p>
+      <p style="font-size:1.4rem; font-weight:800; color:var(--text); margin:0;">{{ result.material }}</p>
+    </div>
+  </div>
+
+  <div class="result-row">
+    <strong>Recommended layer height</strong>
+    <span>{{ result.layer_height }}</span>
+  </div>
+  <div class="result-row">
+    <strong>Typical print speed</strong>
+    <span>{{ result.speed }}</span>
+  </div>
+  <div class="result-row">
+    <strong>Best for</strong>
+    <span>{{ result.best_for }}</span>
+  </div>
+  <div class="result-row">
+    <strong>Avoid using for</strong>
+    <span>{{ result.avoid }}</span>
+  </div>
+
+  <div style="margin-top:16px; padding:14px; background:#fff; border-radius:6px; border:1px solid var(--border);">
+    <strong style="display:block; margin-bottom:6px;">Tips</strong>
+    <p style="color:var(--muted); font-size:0.93rem; margin:0; line-height:1.6;">{{ result.notes }}</p>
+  </div>
+</div>
+{% endif %}
+
+{% if not user.is_paid and user.uses_remaining == 0 %}
+<div style="background:#fff8f5; border:2px solid var(--accent); border-radius:10px; padding:24px; margin-top:24px; text-align:center;">
+  <h3 style="margin-bottom:8px;">You've used all your free uses</h3>
+  <p style="color:var(--muted); margin-bottom:16px;">Upgrade for unlimited access for &pound;5 one-time or &pound;2/month.</p>
+  <a href="/upgrade" class="btn">Upgrade now</a>
+</div>
+{% endif %}
+
+{% endblock %}

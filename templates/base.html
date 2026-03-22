@@ -9,56 +9,170 @@
     :root {
       --accent: #e85d04;
       --dark: #1a1a2e;
+      --dark-hover: #252545;
+      --dark-active: #2e2e55;
       --text: #2d2d2d;
       --muted: #666;
-      --bg: #fff;
-      --bg-alt: #f8f8f8;
+      --bg: #f0f2f5;
+      --bg-card: #fff;
       --border: #e0e0e0;
       --green: #22c55e;
-      --max-w: 860px;
+      --sidebar-w: 230px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 16px; line-height: 1.6; color: var(--text); background: var(--bg); }
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 16px; line-height: 1.6; color: var(--text); background: var(--bg); display: flex; min-height: 100vh; }
 
-    header { background: var(--dark); padding: 0 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-    nav { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 56px; }
-    .nav-left { display: flex; align-items: center; gap: 20px; }
-    .nav-back { color: #888; font-size: 0.82rem; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
-    .nav-back:hover { color: #ccc; text-decoration: none; }
-    .logo { color: #fff; font-size: 1.1rem; font-weight: 700; }
-    .logo span { color: var(--accent); }
-    .nav-links { display: flex; gap: 20px; align-items: center; list-style: none; }
-    .nav-links a { color: #ccc; font-size: 0.9rem; }
-    .nav-links a:hover { color: #fff; text-decoration: none; }
-    .nav-btn { background: var(--accent); color: #fff !important; padding: 6px 16px; border-radius: 5px; font-weight: 600; }
-    .nav-btn:hover { background: #c44d00; }
+    /* ── Sidebar ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      min-height: 100vh;
+      background: var(--dark);
+      position: fixed;
+      top: 0; left: 0;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+    }
+    .sidebar-logo {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .sidebar-logo a {
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .sidebar-logo a span { color: var(--accent); }
+    .sidebar-logo .back-link {
+      display: block;
+      margin-top: 6px;
+      color: #666;
+      font-size: 0.78rem;
+      text-decoration: none;
+    }
+    .sidebar-logo .back-link:hover { color: #999; }
 
-    main { max-width: var(--max-w); margin: 40px auto; padding: 0 20px; }
+    .sidebar-section-label {
+      padding: 20px 20px 8px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #555;
+    }
 
+    .sidebar-nav {
+      list-style: none;
+      flex: 1;
+      padding: 0 10px;
+    }
+    .sidebar-nav li a {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 10px 12px;
+      border-radius: 7px;
+      color: #aaa;
+      font-size: 0.92rem;
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+      margin-bottom: 2px;
+    }
+    .sidebar-nav li a:hover { background: var(--dark-hover); color: #fff; }
+    .sidebar-nav li a.active { background: var(--dark-active); color: #fff; }
+    .sidebar-nav li a .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+
+    .sidebar-divider {
+      height: 1px;
+      background: rgba(255,255,255,0.07);
+      margin: 10px 10px;
+    }
+
+    .sidebar-upgrade {
+      margin: 0 10px 10px;
+      background: var(--accent);
+      color: #fff;
+      text-align: center;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-decoration: none;
+      display: block;
+    }
+    .sidebar-upgrade:hover { background: #c44d00; text-decoration: none; color: #fff; }
+
+    .sidebar-bottom {
+      padding: 10px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+    .sidebar-bottom a {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 10px 12px;
+      border-radius: 7px;
+      color: #888;
+      font-size: 0.88rem;
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+    }
+    .sidebar-bottom a:hover { background: var(--dark-hover); color: #fff; }
+
+    /* ── Main content ── */
+    .main-wrap {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    main {
+      max-width: 900px;
+      width: 100%;
+      margin: 40px auto;
+      padding: 0 32px;
+      flex: 1;
+    }
+
+    footer {
+      margin-left: 0;
+      background: var(--dark);
+      color: #555;
+      text-align: center;
+      padding: 20px;
+      font-size: 0.82rem;
+    }
+    footer a { color: #777; }
+
+    /* ── Flash messages ── */
     .flash { padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; font-size: 0.95rem; }
     .flash.success { background: #f0fdf4; border: 1px solid #86efac; color: #166534; }
     .flash.error { background: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; }
     .flash.warning { background: #fffbeb; border: 1px solid #fcd34d; color: #92400e; }
     .flash.info { background: #eff6ff; border: 1px solid #93c5fd; color: #1e40af; }
 
-    .card { border: 1px solid var(--border); border-radius: 10px; padding: 28px; margin-bottom: 24px; }
+    /* ── Components ── */
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 28px; margin-bottom: 24px; }
     .card h2 { font-size: 1.3rem; margin-bottom: 8px; }
     .card p { color: var(--muted); margin-bottom: 16px; }
 
     .btn { display: inline-block; background: var(--accent); color: #fff; padding: 10px 24px; border-radius: 6px; font-weight: 600; border: none; cursor: pointer; font-size: 1rem; }
-    .btn:hover { background: #c44d00; text-decoration: none; }
+    .btn:hover { background: #c44d00; text-decoration: none; color: #fff; }
     .btn-outline { background: transparent; color: var(--accent); border: 2px solid var(--accent); }
     .btn-outline:hover { background: var(--accent); color: #fff; }
     .btn-green { background: var(--green); }
     .btn-green:hover { background: #16a34a; }
 
     label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; }
-    input, select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; margin-bottom: 16px; }
+    input, select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; margin-bottom: 16px; background: #fff; }
     input:focus, select:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
 
-    .result-box { background: var(--bg-alt); border: 2px solid var(--accent); border-radius: 10px; padding: 24px; margin-top: 28px; }
+    .result-box { background: #fff; border: 2px solid var(--accent); border-radius: 10px; padding: 24px; margin-top: 28px; }
     .result-box h3 { font-size: 1.2rem; margin-bottom: 16px; color: var(--accent); }
     .result-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); }
     .result-row:last-child { border-bottom: none; }
@@ -68,52 +182,70 @@
     .uses-badge { display: inline-block; background: #fff3ed; color: var(--accent); border: 1px solid var(--accent); padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
     .uses-badge.paid { background: #f0fdf4; color: #166534; border-color: #86efac; }
 
-    .tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; margin-top: 28px; }
-    .tool-card { border: 1px solid var(--border); border-radius: 10px; padding: 24px; transition: box-shadow 0.2s; }
-    .tool-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+    .tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 20px; margin-top: 0; }
+    .tool-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 24px; transition: box-shadow 0.2s; }
+    .tool-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
     .tool-card h3 { font-size: 1.05rem; margin-bottom: 8px; }
     .tool-card p { color: var(--muted); font-size: 0.88rem; margin-bottom: 16px; }
     .tool-icon { font-size: 2rem; margin-bottom: 12px; }
-
-    footer { background: var(--dark); color: #888; text-align: center; padding: 28px 20px; font-size: 0.85rem; margin-top: 60px; }
-    footer a { color: #aaa; }
   </style>
 </head>
 <body>
-<header>
-  <nav>
-    <div class="nav-left">
-      <a href="https://print3dbuddy.com" class="nav-back">&#8592; Main Site</a>
-      <a href="/" class="logo">Print3D<span>Buddy</span></a>
-    </div>
-    <ul class="nav-links">
-      <li><a href="/dashboard">Dashboard</a></li>
-      <li><a href="/">Tools</a></li>
-      <li><a href="/test-prints">Test Prints</a></li>
-      <li><a href="/guides">Quick Guides</a></li>
-      {% if user %}
-        <li><a href="/account">Account</a></li>
-        <li><a href="/logout">Log out</a></li>
-        {% if not user.is_paid %}
-          <li><a href="/upgrade" class="nav-btn">Upgrade &mdash; from &pound;2/mo</a></li>
-        {% endif %}
-      {% else %}
-        <li><a href="/login">Log in</a></li>
-        <li><a href="/register" class="nav-btn">Get started free</a></li>
-      {% endif %}
-    </ul>
-  </nav>
-</header>
 
-<main>
-  {% for category, message in get_flashed_messages(with_categories=True) %}
-    <div class="flash {{ category }}">{{ message }}</div>
-  {% endfor %}
-  {% block content %}{% endblock %}
-</main>
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <a href="/dashboard">Print3D<span>Buddy</span></a>
+    <a href="https://print3dbuddy.com" class="back-link">&#8592; Back to main site</a>
+  </div>
 
-<footer>
-  <p>&copy; 2025 Print3DBuddy &mdash; <a href="https://print3dbuddy.com">Back to main site</a></p>
-</footer>
+  <p class="sidebar-section-label">Main Menu</p>
+
+  <ul class="sidebar-nav">
+    <li><a href="/dashboard" class="{{ 'active' if request.path == '/dashboard' else '' }}">
+      <span class="nav-icon">&#9783;</span> Dashboard
+    </a></li>
+    <li><a href="/" class="{{ 'active' if request.path == '/' else '' }}">
+      <span class="nav-icon">&#129518;</span> Tools
+    </a></li>
+    <li><a href="/test-prints" class="{{ 'active' if request.path == '/test-prints' else '' }}">
+      <span class="nav-icon">&#128208;</span> Test Prints
+    </a></li>
+    <li><a href="/guides" class="{{ 'active' if request.path == '/guides' or request.path.startswith('/guides/') else '' }}">
+      <span class="nav-icon">&#128214;</span> Quick Guides
+    </a></li>
+
+    {% if user %}
+    <div class="sidebar-divider"></div>
+    <li><a href="/account" class="{{ 'active' if request.path == '/account' else '' }}">
+      <span class="nav-icon">&#128100;</span> Account
+    </a></li>
+    {% endif %}
+  </ul>
+
+  {% if user and not user.is_paid %}
+  <a href="/upgrade" class="sidebar-upgrade">Upgrade &mdash; from &pound;2/mo</a>
+  {% endif %}
+
+  <div class="sidebar-bottom">
+    {% if user %}
+      <a href="/logout"><span style="font-size:1rem; width:20px; text-align:center;">&#8594;</span> Log out</a>
+    {% else %}
+      <a href="/login"><span style="font-size:1rem; width:20px; text-align:center;">&#128274;</span> Log in</a>
+    {% endif %}
+  </div>
+</aside>
+
+<div class="main-wrap">
+  <main>
+    {% for category, message in get_flashed_messages(with_categories=True) %}
+      <div class="flash {{ category }}">{{ message }}</div>
+    {% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer>
+    <p>&copy; 2025 Print3DBuddy &mdash; <a href="https://print3dbuddy.com">Back to main site</a></p>
+  </footer>
+</div>
+
 </body>
 </html>

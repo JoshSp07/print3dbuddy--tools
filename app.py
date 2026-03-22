@@ -727,6 +727,49 @@ TEST_PRINTS = [
 </ol>
 <h3 style="font-size:0.95rem;margin:14px 0 8px;">What to do with the result</h3>
 <p>Set your slicer's support threshold 5\u00b0 below your limit. If your limit is 45\u00b0, set supports to kick in at 40\u00b0. If even 20\u00b0 looks bad, check your part cooling fan speed.</p>''',
+        'deep_guide': '''
+<h3>Why overhang angle matters</h3>
+<p>When your printer lays down a layer that extends out beyond the one below it, there's nothing to support the new filament from underneath. Up to a certain angle, the layer bonds well enough to the edge of the previous one and holds itself up. Past that angle, the filament droops or curls upward before it solidifies, leaving a rough underside.</p>
+<p>The exact limit varies a lot between printers and even between materials on the same printer. A well-tuned direct drive printer with strong part cooling might handle 55-60 cleanly. A bowden setup with weak cooling might struggle past 40. That's why you need to test your specific machine rather than rely on a generic number.</p>
+
+<h3>Printing tips for accurate results</h3>
+<ul>
+  <li><strong>No supports:</strong> this test only makes sense without them. Turn supports off entirely.</li>
+  <li><strong>Normal settings:</strong> print at the same speed, temperature, and fan speed you use day-to-day. You're testing your baseline, not an optimised special case.</li>
+  <li><strong>PLA first:</strong> if you print multiple materials, do this test in PLA first. PETG and ABS tolerate overhangs differently - test each material separately.</li>
+  <li><strong>Orientation:</strong> print with the flat base on the bed. Don't rotate it.</li>
+</ul>
+
+<h3>Reading the result in detail</h3>
+<p>Turn the print over and look at each fin from underneath with a light source behind it. You're looking for:</p>
+<ul>
+  <li><strong>Clean and smooth:</strong> the fin printed well at this angle</li>
+  <li><strong>Slightly rough texture:</strong> borderline - this angle is marginal for your printer</li>
+  <li><strong>Visible drooping or sagging:</strong> this angle exceeds your printer's capability</li>
+  <li><strong>Curling upward at the tip:</strong> the filament cooled before bonding properly</li>
+  <li><strong>Stringy mess on underside:</strong> severe failure - cooling or temperature issue</li>
+</ul>
+<p>Your safe overhang angle is the last fin that looks fully clean. Set your slicer's support angle threshold to 5 degrees below this number.</p>
+
+<h3>Improving your overhang performance</h3>
+<p>If your results are worse than expected, try these in order:</p>
+<ol>
+  <li><strong>Check part cooling fan:</strong> it should be at 100% for PLA overhangs. A partial blockage or slow fan makes a huge difference.</li>
+  <li><strong>Lower print temperature by 5C:</strong> cooler filament solidifies faster and droops less.</li>
+  <li><strong>Slow the print speed down:</strong> slower movement gives each layer more time to cool before the next one lands on it.</li>
+  <li><strong>Check fan duct alignment:</strong> the airflow should hit the printed layer, not the nozzle. A mis-aimed duct is a common cause of poor overhangs.</li>
+</ol>
+<p><strong>Note for PETG and ABS:</strong> these materials need lower fan speeds to prevent layer delamination, which means worse overhang performance is normal. Don't try to match your PLA results - accept a lower threshold and use supports more liberally for those materials.</p>
+
+<h3>How to use this result in practice</h3>
+<p>Once you know your overhang limit, you can make better decisions when slicing:</p>
+<ul>
+  <li>Models with overhangs below your limit need no supports at all</li>
+  <li>For overhangs just above your limit, try orienting the model differently to reduce the overhang angle</li>
+  <li>For severe overhangs, use tree supports - they leave a smaller footprint on the model surface</li>
+  <li>For functional parts, design overhangs below 45 degrees where possible to avoid supports entirely</li>
+</ul>
+''',
         'related': 'https://print3dbuddy.com/posts/how-to-calibrate-your-first-3d-printer/',
         'related_label': 'Full calibration guide',
     },
@@ -751,6 +794,51 @@ TEST_PRINTS = [
   <li><strong>Bowden:</strong> start at 4-6mm retraction</li>
   <li><strong>Still stringing?</strong> Drop nozzle temp by 5\u00b0C</li>
 </ul>''',
+        'deep_guide': '''
+<h3>Understanding retraction</h3>
+<p>When the printhead travels from one part of the model to another without extruding, molten filament continues to ooze from the nozzle due to pressure in the hotend. Retraction pulls the filament slightly backwards to relieve that pressure and stop the ooze. Too little retraction and you get strings. Too much and you get grinding, under-extrusion, or even clogs.</p>
+<p>The settings are very different between direct drive (short filament path, 0.5-2mm) and bowden (long tube, 4-7mm). Using bowden values on a direct drive will destroy your results.</p>
+
+<h3>Starting values by extruder type</h3>
+<table>
+  <tr><th>Extruder type</th><th>Retraction distance</th><th>Retraction speed</th></tr>
+  <tr><td>Direct drive (Bambu, Prusa, Ender 3 with direct upgrade)</td><td>0.5 - 1.5mm</td><td>35 - 45mm/s</td></tr>
+  <tr><td>Bowden (stock Ender 3, CR-10)</td><td>4 - 6mm</td><td>40 - 60mm/s</td></tr>
+</table>
+
+<h3>How to run a proper test sequence</h3>
+<ol>
+  <li>Print the test at your current settings and note which towers have strings.</li>
+  <li>If strings are present, increase retraction distance by 0.5mm and reprint.</li>
+  <li>If you get blobbing or the towers look under-extruded, you've gone too far - reduce by 0.5mm.</li>
+  <li>Once distance looks good, try increasing retraction speed by 5mm/s if strings remain.</li>
+  <li>Still stringing after optimal retraction? Lower your print temperature by 5C.</li>
+</ol>
+<p>Make one change at a time. Changing two things at once means you won't know which one fixed it.</p>
+
+<h3>Reading the towers in detail</h3>
+<ul>
+  <li><strong>Fine hairs between towers:</strong> slightly too little retraction or temp too high</li>
+  <li><strong>Thick strings or blobs:</strong> significantly too little retraction</li>
+  <li><strong>Towers look rough or have gaps:</strong> too much retraction - filament isn't priming properly</li>
+  <li><strong>Blobs at the start of each tower:</strong> pressure advance/linear advance needs tuning (separate calibration)</li>
+  <li><strong>Completely clean:</strong> your retraction is well tuned for this filament</li>
+</ul>
+
+<h3>Temperature's role</h3>
+<p>Lower temperature is often more effective than more retraction. Hotter filament is more liquid and oozes more freely. Before pushing retraction too high, try dropping the nozzle temp by 5C. The sweet spot is usually the lowest temperature that still gives good layer adhesion - use the temperature tower test to find this.</p>
+
+<h3>Material-specific notes</h3>
+<ul>
+  <li><strong>PLA:</strong> responds well to retraction adjustments. Usually clean at 1mm direct drive or 5mm bowden.</li>
+  <li><strong>PETG:</strong> inherently stringier than PLA. Some stringing is normal - aim for thin hairs, not thick strings. Don't push retraction too high or you'll get blobs.</li>
+  <li><strong>TPU:</strong> disable retraction or set to 0.5mm maximum. TPU is too flexible to retract reliably.</li>
+  <li><strong>ABS/ASA:</strong> similar to PLA but higher temps mean more ooze. Start at PLA values and adjust from there.</li>
+</ul>
+
+<h3>Combing / avoid crossing perimeters</h3>
+<p>Most slicers have a setting that routes travel moves over already-printed areas rather than open air. This dramatically reduces stringing because the nozzle rarely travels over gaps. In Cura it's called Combing Mode (set to All or Not in Skin). In PrusaSlicer/OrcaSlicer it's Avoid Crossing Perimeters. Enable this before adjusting retraction - it may solve the problem without touching retraction at all.</p>
+''',
         'related': 'https://print3dbuddy.com/posts/how-to-fix-3d-printer-stringing/',
         'related_label': 'Full stringing fix guide',
     },
@@ -774,6 +862,54 @@ TEST_PRINTS = [
   <li>Set part cooling fan to 100%</li>
   <li>Drop nozzle temp by 5\u00b0C</li>
 </ul>''',
+        'deep_guide': '''
+<h3>What makes bridging work</h3>
+<p>Bridging is different from overhangs. An overhang is supported on one side. A bridge is supported on both ends with nothing underneath the middle. The printer lays filament across the gap in a single pass - it relies on tension in the extruded filament strand and rapid cooling to hold it in place before it sags.</p>
+<p>Three things determine bridging performance: speed, cooling, and temperature. The filament needs to be cool enough to solidify quickly, moving fast enough to stay taut, but not so fast that the strand breaks.</p>
+
+<h3>Ideal print settings for the test</h3>
+<ul>
+  <li>No supports - that's the whole point</li>
+  <li>Part cooling fan at 100%</li>
+  <li>Normal speed to start - you'll optimise from results</li>
+</ul>
+
+<h3>Reading the results</h3>
+<p>Flip the print over and inspect each bridge underside:</p>
+<ul>
+  <li><strong>Flat and smooth:</strong> excellent bridge, you have headroom at this span</li>
+  <li><strong>Slight texture but no sag:</strong> acceptable - functional but not cosmetic quality</li>
+  <li><strong>Visible sag in the middle:</strong> this span exceeds your printer's comfortable bridging limit</li>
+  <li><strong>Drooping strands or complete failure:</strong> significantly too long or settings need adjustment</li>
+</ul>
+<p>Your practical bridging limit is the longest span that's flat or has only slight texture. Design models to stay within this - for spans beyond it, use supports.</p>
+
+<h3>Improving bridge quality step by step</h3>
+<ol>
+  <li><strong>Slow down:</strong> reduce bridging speed to 50% of your normal print speed. Most slicers have a dedicated bridging speed setting. This gives the filament more time to cool mid-span.</li>
+  <li><strong>Max out the fan:</strong> 100% cooling is essential. The faster the filament solidifies after being laid, the less it sags.</li>
+  <li><strong>Drop temperature 5C:</strong> cooler filament is stiffer when extruded and sags less.</li>
+  <li><strong>Increase fan speed before the bridge:</strong> some slicers let you ramp the fan up a few layers before the bridge starts. This pre-cools the area.</li>
+  <li><strong>Check flow rate:</strong> slightly lower flow (95%) on bridges can reduce weight and sag.</li>
+</ol>
+
+<h3>Bridging vs supports decision guide</h3>
+<table>
+  <tr><th>Bridge span</th><th>Recommendation</th></tr>
+  <tr><td>Under your tested limit</td><td>Bridge freely, no supports needed</td></tr>
+  <tr><td>Just over your limit</td><td>Try optimised bridge settings first</td></tr>
+  <tr><td>More than 2x your limit</td><td>Use supports - bridging won't save this</td></tr>
+  <tr><td>Wide flat area</td><td>Reorient model if possible to avoid the bridge entirely</td></tr>
+</table>
+
+<h3>Material differences</h3>
+<ul>
+  <li><strong>PLA:</strong> best bridging performance, cools quickly and holds tension well</li>
+  <li><strong>PETG:</strong> worse than PLA, more elastic and stays soft longer. Slower speeds help more than temperature changes.</li>
+  <li><strong>ABS/ASA:</strong> poor bridging without an enclosure. The draft from airflow disrupts the strand. Reduce fan speed and slow down significantly.</li>
+  <li><strong>TPU:</strong> bridging is very difficult due to flexibility. Design to avoid bridges entirely with TPU.</li>
+</ul>
+''',
         'related': 'https://print3dbuddy.com/posts/3d-printing-supports-guide/',
         'related_label': 'Full supports guide',
     },
@@ -797,6 +933,49 @@ TEST_PRINTS = [
   <li><strong>Elephant foot on circles:</strong> nozzle too close</li>
   <li><strong>Correct:</strong> lines slightly squished, separate, circles round</li>
 </ul>''',
+        'deep_guide': '''
+<h3>Why the first layer is so critical</h3>
+<p>Everything that follows is built on the first layer. If it's not right - too squished, too gappy, not sticking, uneven across the bed - every subsequent layer compounds the problem. Getting the first layer right is the single most impactful thing you can calibrate on any FDM printer.</p>
+<p>There are three things at play: z offset (how far the nozzle is from the bed), bed levelness (is the gap consistent across the whole surface), and bed temperature/surface condition (does the filament actually bond).</p>
+
+<h3>How to read this test print precisely</h3>
+<p>Print the grid and inspect it under good lighting. Use a finger to feel the surface as well as looking at it.</p>
+<table>
+  <tr><th>What you see</th><th>What it means</th><th>Fix</th></tr>
+  <tr><td>Lines merge into a solid sheet, surface looks glassy</td><td>Z offset too low (nozzle too close)</td><td>Raise Z offset by 0.05mm</td></tr>
+  <tr><td>Lines barely touching, slight ridges visible</td><td>Correct - this is ideal</td><td>No change needed</td></tr>
+  <tr><td>Clear gaps between lines, lines look round not flat</td><td>Z offset too high (nozzle too far)</td><td>Lower Z offset by 0.05mm</td></tr>
+  <tr><td>Lines not sticking at all, peeling up</td><td>Way too high, or bed temperature too low</td><td>Lower Z offset 0.1mm and check bed temp</td></tr>
+  <tr><td>Looks good in centre but gaps at edges</td><td>Bed not level (edges too high relative to centre)</td><td>Re-level the bed, raise edge corners</td></tr>
+  <tr><td>Looks good at edges but squished in centre</td><td>Bed not level (centre too high, or bed bowing)</td><td>Re-level, check for bed warp with a straight edge</td></tr>
+  <tr><td>Elephant foot on the circle features</td><td>Nozzle too close, first layer squishes out sideways</td><td>Raise Z offset 0.05-0.1mm</td></tr>
+</table>
+
+<h3>Z offset adjustment guide</h3>
+<p>Make adjustments in 0.05mm steps. Reprint the test after each change. It feels slow but you'll nail it in 2-3 iterations and won't need to redo it for weeks.</p>
+<ul>
+  <li>On Bambu printers: adjust in Bambu Studio under calibration, or use the Live Adjust Z during print</li>
+  <li>On Prusa printers: use the Live Adjust Z during the first layer, or adjust in the calibration menu</li>
+  <li>On Ender 3 and similar: adjust the bed screws (with the printer homed) or use the babystepping during print if you have Marlin 2.x</li>
+  <li>On printers with BLTouch/CR Touch: adjust the Z offset in the menu, not the physical bed position</li>
+</ul>
+
+<h3>Bed levelling vs Z offset - what's the difference?</h3>
+<p>These are two separate things that both affect the first layer:</p>
+<ul>
+  <li><strong>Z offset</strong> is the overall gap between the nozzle and the bed when it's homed. One number, affects the whole bed.</li>
+  <li><strong>Bed levelling</strong> is making the bed surface parallel to the gantry. If one corner is lower than another, the Z offset might be perfect in one spot and terrible in another.</li>
+</ul>
+<p>Always level the bed first, then dial in Z offset. Doing it the other way round means your good-looking Z offset only works in one spot.</p>
+
+<h3>Bed surface and temperature</h3>
+<ul>
+  <li>Clean your PEI surface with IPA before this test - oils from handling change adhesion significantly</li>
+  <li>PLA: 55-60C bed temperature is typically right. Going higher than 65C can cause elephant foot.</li>
+  <li>PETG: 70-80C. Be cautious on smooth PEI - PETG can bond too hard and tear the surface on removal.</li>
+  <li>ABS/ASA: 100-110C. Needs an enclosure for consistent results.</li>
+</ul>
+''',
         'related': 'https://print3dbuddy.com/posts/3d-printing-first-layer-problems-fixes/',
         'related_label': 'First layer problems guide',
     },
@@ -817,6 +996,55 @@ TEST_PRINTS = [
 <p>In OrcaSlicer/PrusaSlicer: use "Change filament temperature at layer". In Cura: use the ChangeAtZ plugin.</p>
 <h3 style="font-size:0.95rem;margin:14px 0 8px;">Reading the result</h3>
 <p>Find the segment with a flat overhang tab, no stringing, and smooth walls. Too hot = stringing and drooping. Too cold = rough surface and weak layer adhesion.</p>''',
+        'deep_guide': '''
+<h3>Why temperature matters so much</h3>
+<p>Every filament brand and even every colour from the same brand has a slightly different ideal printing temperature. The number on the spool is a range, not a target. Within that range, different temperatures give very different results for stringing, surface finish, overhang quality, and layer strength. The temperature tower lets you find your specific sweet spot in one print.</p>
+
+<h3>Slicer setup - step by step</h3>
+<p>You need to add temperature change commands at specific heights. The exact method varies by slicer:</p>
+<ul>
+  <li><strong>OrcaSlicer:</strong> Right-click the model, select "Add height range modifier", set temperature per zone</li>
+  <li><strong>PrusaSlicer / BambuStudio:</strong> Add a custom G-code at specific layer heights: <code>M104 S[temp]</code></li>
+  <li><strong>Cura:</strong> Install the ChangeAtZ plugin from the marketplace, then set temperature changes in its settings</li>
+</ul>
+<p>Temperature zones for this tower (each segment is 10mm tall, starting at Z=3mm):</p>
+<table>
+  <tr><th>Height (Z)</th><th>Temperature</th></tr>
+  <tr><td>3 - 13mm</td><td>220C</td></tr>
+  <tr><td>13 - 23mm</td><td>215C</td></tr>
+  <tr><td>23 - 33mm</td><td>210C</td></tr>
+  <tr><td>33 - 43mm</td><td>205C</td></tr>
+  <tr><td>43 - 53mm</td><td>200C</td></tr>
+  <tr><td>53 - 63mm</td><td>195C</td></tr>
+</table>
+
+<h3>Reading the result</h3>
+<p>Inspect each segment for four things:</p>
+<ul>
+  <li><strong>Overhang tab:</strong> should be flat and clean. Drooping or curling = too hot</li>
+  <li><strong>Stringing between features:</strong> threads present = too hot</li>
+  <li><strong>Wall surface finish:</strong> smooth and slightly shiny = good. Rough or matte = possibly too cool</li>
+  <li><strong>Layer lines visibility:</strong> very pronounced bumpy lines = too cool, layers not bonding fully</li>
+</ul>
+<p>The ideal segment has a clean overhang, no stringing, smooth walls, and no visible separation between layers. That temperature is your starting point - it's worth fine-tuning by 2-3C in either direction after this.</p>
+
+<h3>Material-specific temperature ranges</h3>
+<table>
+  <tr><th>Material</th><th>Typical range</th><th>Starting point</th></tr>
+  <tr><td>PLA</td><td>190 - 220C</td><td>210C</td></tr>
+  <tr><td>PETG</td><td>220 - 245C</td><td>235C</td></tr>
+  <tr><td>ABS</td><td>220 - 250C</td><td>240C</td></tr>
+  <tr><td>ASA</td><td>240 - 260C</td><td>250C</td></tr>
+  <tr><td>TPU (95A)</td><td>210 - 230C</td><td>220C</td></tr>
+</table>
+<p>For PETG, ABS, and ASA, adjust the tower temperatures upward to match the material's range.</p>
+
+<h3>Combining with other calibrations</h3>
+<p>Run this test before retraction calibration - temperature affects stringing, so if you calibrate retraction at the wrong temperature you'll need to redo it. The correct order is: first layer and z offset, then temperature tower, then retraction, then flow rate.</p>
+
+<h3>Re-run for every new filament brand or colour</h3>
+<p>Different pigments affect thermal properties. A black PLA and a white PLA from the same brand can have different ideal temperatures by 5-10C. It takes 20 minutes and saves hours of troubleshooting later.</p>
+''',
         'related': 'https://print3dbuddy.com/posts/pla-vs-petg-vs-abs-which-filament-for-beginners/',
         'related_label': 'Filament comparison guide',
     },
@@ -841,6 +1069,56 @@ TEST_PRINTS = [
   <li><strong>Smooth, flat, consistent surface:</strong> that is your correct flow rate</li>
 </ul>
 <p style="margin-top:10px;">Dial in to the nearest 1% from there. Most filaments land between 95-100%.</p>''',
+        'deep_guide': '''
+<h3>What flow rate actually controls</h3>
+<p>Flow rate (also called extrusion multiplier) scales how much filament the printer extrudes relative to what the slicer calculated. At 100%, the printer tries to extrude exactly the right amount. At 95%, it extrudes 5% less. At 105%, 5% more.</p>
+<p>Even a small error - 3-5% - causes visible problems: gaps in top surfaces, weak layer bonds, dimensional inaccuracy, or over-extruded blobs and raised seams. This is one of the most impactful calibrations you can do.</p>
+
+<h3>Before you start - e-steps first</h3>
+<p>Flow rate calibration assumes your e-steps are correct. E-steps control how far the extruder motor turns per mm of filament commanded. If your e-steps are wrong, no flow rate setting will fully fix it.</p>
+<p>Quick e-steps check: mark 100mm of filament above the extruder, command 100mm of extrusion, measure how much actually moved. If it's not 100mm, calibrate e-steps first, then come back to flow rate.</p>
+
+<h3>Slicer setup for the test</h3>
+<ol>
+  <li>Import the STL file and split it into 5 separate objects in your slicer</li>
+  <li>Assign each tile its own process/modifier with a different flow rate:
+    <ul>
+      <li>Tile labelled 90%: set flow multiplier to 0.90</li>
+      <li>Tile labelled 95%: set to 0.95</li>
+      <li>Tile labelled 100%: set to 1.00</li>
+      <li>Tile labelled 105%: set to 1.05</li>
+      <li>Tile labelled 110%: set to 1.10</li>
+    </ul>
+  </li>
+  <li>Print all 5 together in one job at your normal temperature and speed</li>
+</ol>
+<p>In OrcaSlicer: right-click each object, Add Part Settings, change extrusion multiplier. In PrusaSlicer: use Per-Object settings. In Cura: use a modifier mesh or separate print jobs.</p>
+
+<h3>Reading the top surfaces</h3>
+<p>Look at each tile from above under good light, and run a finger across them:</p>
+<table>
+  <tr><th>What you see / feel</th><th>What it means</th></tr>
+  <tr><td>Gaps or grooves between top surface lines</td><td>Under-extrusion - flow too low</td></tr>
+  <tr><td>Smooth and flat, lines barely visible</td><td>Correct flow rate</td></tr>
+  <tr><td>Slightly raised ridges along lines</td><td>Slightly over-extruding</td></tr>
+  <tr><td>Prominent ridges, bumpy surface, raised seam</td><td>Significantly over-extruding</td></tr>
+  <tr><td>Blobs or zits visible</td><td>Over-extrusion combined with pressure buildup</td></tr>
+</table>
+
+<h3>Dialling in to the nearest percent</h3>
+<p>Once you've identified which tile looks best, fine-tune from there. If 95% looks better than 100% but still has slight gaps, try 97% or 98% in a single tile reprint. Most printers land between 95-102%.</p>
+
+<h3>Apply the result in your slicer</h3>
+<p>Set your global extrusion multiplier to the value you found. This should be set at the filament profile level, not the printer level - different filament brands may need slightly different values even on the same printer.</p>
+
+<h3>When to rerun this test</h3>
+<ul>
+  <li>When switching to a new filament brand or type</li>
+  <li>After changing your nozzle (wear affects flow)</li>
+  <li>If you're seeing unexplained surface quality changes on prints that used to look fine</li>
+  <li>After a significant temperature change to your printing environment</li>
+</ul>
+''',
         'related': 'https://print3dbuddy.com/posts/how-to-calibrate-flow-rate-extrusion-multiplier/',
         'related_label': 'Flow rate calibration guide',
     },
@@ -867,6 +1145,65 @@ TEST_PRINTS = [
   <li><strong>Over-extruded ridges:</strong> flow too high - drop by 5%</li>
 </ul>
 <p style="margin-top:10px;">Most PLA lands at 10-15% flow. PETG often needs 15-20%. Works best on flat top surfaces.</p>''',
+        'deep_guide': '''
+<h3>What ironing actually does</h3>
+<p>After printing the top surface normally, ironing makes the nozzle pass over it again at low/no extrusion, remelting the top layer and smoothing it flat. Done correctly, it produces a near-glossy surface that looks almost injection-moulded. Done incorrectly, it leaves grooves, streaks, or makes no visible difference.</p>
+<p>Ironing only works on flat horizontal top surfaces. Curved tops, angled surfaces, and vertical walls are unaffected.</p>
+
+<h3>Slicer setup for the test</h3>
+<ol>
+  <li>Import the STL and split into 4 separate objects</li>
+  <li>Tile 1 (NO IRON): ironing disabled - your baseline reference</li>
+  <li>Tile 2 (IRON 10%): ironing enabled, flow 10%, speed 50% of print speed</li>
+  <li>Tile 3 (IRON 15%): ironing enabled, flow 15%, speed 50% of print speed</li>
+  <li>Tile 4 (IRON 20%): ironing enabled, flow 20%, speed 50% of print speed</li>
+  <li>Print all 4 together</li>
+</ol>
+
+<h3>Key settings explained</h3>
+<table>
+  <tr><th>Setting</th><th>What it does</th><th>Starting value</th></tr>
+  <tr><td>Ironing flow</td><td>How much filament is extruded during the iron pass</td><td>10-15%</td></tr>
+  <tr><td>Ironing speed</td><td>How fast the nozzle moves during ironing</td><td>50% of print speed</td></tr>
+  <tr><td>Ironing line spacing</td><td>Gap between iron passes</td><td>0.1mm (tighter = smoother)</td></tr>
+  <tr><td>Ironing pattern</td><td>Direction of passes</td><td>Concentric or zig-zag</td></tr>
+</table>
+
+<h3>Reading the results</h3>
+<ul>
+  <li><strong>Tile 1 (no iron):</strong> shows your baseline top surface quality</li>
+  <li><strong>Smooth and glossy:</strong> this is the correct flow rate for your filament</li>
+  <li><strong>Still rough or uneven:</strong> flow is too low, or ironing speed is too fast</li>
+  <li><strong>Parallel grooves visible:</strong> line spacing is too wide - reduce from 0.1mm to 0.08mm</li>
+  <li><strong>Raised ridges along iron lines:</strong> flow too high - the iron pass is adding material rather than smoothing</li>
+  <li><strong>Shiny in patches, dull in others:</strong> uneven bed levelling is affecting the iron pass height</li>
+</ul>
+
+<h3>Material results</h3>
+<table>
+  <tr><th>Material</th><th>Typical best flow</th><th>Notes</th></tr>
+  <tr><td>PLA</td><td>10-15%</td><td>Best ironing results, highly recommended</td></tr>
+  <tr><td>PETG</td><td>15-20%</td><td>Works but surface is less glossy than PLA</td></tr>
+  <tr><td>ABS/ASA</td><td>10-15%</td><td>Good results but requires enclosure</td></tr>
+  <tr><td>TPU</td><td>Not recommended</td><td>Too soft, iron pass deforms the surface</td></tr>
+</table>
+
+<h3>When ironing is worth using</h3>
+<ul>
+  <li>Cosmetic parts where the top surface is visible</li>
+  <li>Flat surfaces that will be painted - ironing gives a better base</li>
+  <li>Phone cases, desk items, anything where appearance matters</li>
+  <li>Parts where slight dimensional accuracy on the top matters</li>
+</ul>
+<p>Ironing adds print time (typically 10-20% longer for parts with large top surfaces). For internal or functional parts, skip it and save the time.</p>
+
+<h3>Troubleshooting ironing problems</h3>
+<ul>
+  <li><strong>Ironing makes no difference:</strong> speed probably too fast or flow too low. Try halving speed and doubling flow from your starting point.</li>
+  <li><strong>Nozzle catches on the surface:</strong> z offset slightly too low for the iron pass. Check that your flow rate isn't too high.</li>
+  <li><strong>Blobs at direction changes:</strong> reduce retraction during ironing (separate setting in some slicers)</li>
+</ul>
+''',
         'related': 'https://print3dbuddy.com/posts/3d-printing-ironing-guide/',
         'related_label': 'Ironing settings guide',
     },

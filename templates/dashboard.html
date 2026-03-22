@@ -1,43 +1,186 @@
 {% extends "base.html" %}
-{% block title %}My Account{% endblock %}
+{% block title %}Dashboard{% endblock %}
 {% block content %}
 
-<h1 style="font-size:1.6rem; font-weight:800; margin-bottom:4px;">My Account</h1>
-<p style="color:var(--muted); margin-bottom:28px;">{{ user.email }}</p>
+<div style="margin-bottom:36px;">
+  <h1 style="font-size:1.9rem; font-weight:800; margin-bottom:8px;">Dashboard</h1>
+  <p style="color:var(--muted); font-size:1.05rem; max-width:580px;">Everything Print3DBuddy has to offer, in one place. Pick a tool, run a test print, or open a guide.</p>
 
-<div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:32px;">
+  {% if not user %}
+  <div style="margin-top:20px; background:#fff8f5; border:2px solid var(--accent); border-radius:10px; padding:20px 24px; max-width:560px;">
+    <strong style="display:block; margin-bottom:4px;">Create a free account to get started.</strong>
+    <p style="color:var(--muted); font-size:0.9rem; margin-bottom:14px;">Free accounts get 3 tool uses. Upgrade for unlimited access, full guides, and STL downloads.</p>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <a href="/register" class="btn">Register free</a>
+      <a href="/login" class="btn btn-outline">Log in</a>
+    </div>
+  </div>
+  {% elif not user.is_paid %}
+  <div style="margin-top:16px; background:#fff8f5; border:1px solid #f0d5c8; border-radius:8px; padding:14px 20px; font-size:0.9rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; max-width:640px;">
+    <span style="color:var(--muted);">Free account &mdash; <strong style="color:var(--text);">{{ user.uses_remaining }} use{{ 's' if user.uses_remaining != 1 else '' }} remaining</strong>. Upgrade for unlimited access.</span>
+    <a href="/upgrade" class="btn" style="padding:8px 18px; font-size:0.9rem;">Upgrade &rarr;</a>
+  </div>
+  {% else %}
+  <div style="margin-top:16px; background:#f0fdf4; border:1px solid #86efac; border-radius:8px; padding:12px 18px; font-size:0.9rem; color:#166534; max-width:640px;">
+    &#10003; Paid member &mdash; full access unlocked.
+  </div>
+  {% endif %}
+</div>
 
-  <div style="border:1px solid var(--border); border-radius:10px; padding:24px;">
-    <h2 style="font-size:1rem; font-weight:700; margin-bottom:12px;">Membership</h2>
-    {% if user.is_paid %}
-      <span class="uses-badge paid">&#10003; Paid &mdash; Unlimited access</span>
-      <p style="color:var(--muted); font-size:0.88rem; margin-top:12px;">You have full access to all tools, test print guides, and STL downloads.</p>
-    {% else %}
-      <span class="uses-badge">Free &mdash; {{ user.uses_remaining }} use{{ 's' if user.uses_remaining != 1 else '' }} remaining</span>
-      <p style="color:var(--muted); font-size:0.88rem; margin-top:12px;">Free accounts get 3 uses across all tools. Upgrade for unlimited access.</p>
-      <a href="/upgrade" style="display:inline-block; margin-top:12px; font-weight:600; font-size:0.9rem; color:var(--accent);">Upgrade &rarr;</a>
-    {% endif %}
+<h2 style="font-size:1.15rem; font-weight:700; margin-bottom:6px;">&#129518; Calculators &amp; Tools</h2>
+<p style="color:var(--muted); font-size:0.9rem; margin-bottom:18px;">Free to try (3 uses) &mdash; unlimited with a paid account.</p>
+
+<div class="tool-grid" style="margin-top:0; margin-bottom:44px;">
+
+  <div class="tool-card">
+    <div class="tool-icon">&#129518;</div>
+    <h3>Filament Cost Calculator</h3>
+    <p>Enter your spool price, print weight, and electricity cost to get an exact cost-per-print breakdown.</p>
+    <a href="{% if user %}/tools/filament-cost{% else %}/register{% endif %}" class="btn">Use tool</a>
   </div>
 
-  <div style="border:1px solid var(--border); border-radius:10px; padding:24px;">
-    <h2 style="font-size:1rem; font-weight:700; margin-bottom:12px;">Quick Links</h2>
-    <ul style="list-style:none; display:flex; flex-direction:column; gap:8px;">
-      <li><a href="/" style="font-size:0.9rem;">&#8594; All Services</a></li>
-      <li><a href="/test-prints" style="font-size:0.9rem;">&#8594; Calibration Test Prints</a></li>
-      <li><a href="/tools/filament-cost" style="font-size:0.9rem;">&#8594; Filament Cost Calculator</a></li>
-      <li><a href="/tools/print-settings" style="font-size:0.9rem;">&#8594; Print Settings Cheat Sheet</a></li>
-      <li><a href="/tools/slicer-recommender" style="font-size:0.9rem;">&#8594; Slicer Recommender</a></li>
-      <li><a href="/tools/stl-estimator" style="font-size:0.9rem;">&#8594; STL Filament Estimator</a></li>
-    </ul>
+  <div class="tool-card">
+    <div class="tool-icon">&#9881;&#65039;</div>
+    <h3>Print Settings Cheat Sheet</h3>
+    <p>Pick your filament type and extruder. Get instant recommended temperature, speed, and retraction settings.</p>
+    <a href="{% if user %}/tools/print-settings{% else %}/register{% endif %}" class="btn">Use tool</a>
+  </div>
+
+  <div class="tool-card">
+    <div class="tool-icon">&#128421;&#65039;</div>
+    <h3>Slicer Recommender</h3>
+    <p>Answer a few quick questions about your printer and goals. Get a personalised slicer recommendation with setup tips.</p>
+    <a href="{% if user %}/tools/slicer-recommender{% else %}/register{% endif %}" class="btn">Use tool</a>
+  </div>
+
+  <div class="tool-card">
+    <div class="tool-icon">&#128208;</div>
+    <h3>STL Filament Estimator</h3>
+    <p>Upload any STL file and get an accurate filament weight, length, and cost estimate before you hit print.</p>
+    <a href="{% if user %}/tools/stl-estimator{% else %}/register{% endif %}" class="btn">Use tool</a>
   </div>
 
 </div>
 
-{% if not user.is_paid %}
-<div style="background:#fff8f5; border:2px solid var(--accent); border-radius:10px; padding:24px;">
-  <h2 style="font-size:1.1rem; margin-bottom:6px;">Unlock everything for &pound;2/month</h2>
-  <p style="color:var(--muted); font-size:0.93rem; margin-bottom:16px;">Unlimited tool use, full step-by-step guides for all 5 calibration test prints, and STL downloads. Or pay &pound;5 once.</p>
+<h2 style="font-size:1.15rem; font-weight:700; margin-bottom:6px;">&#128424; Calibration Test Prints</h2>
+<p style="color:var(--muted); font-size:0.9rem; margin-bottom:18px;">Seven targeted test prints to dial in your FDM printer. Full guides and STL downloads for paid members.</p>
+
+<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:20px; margin-bottom:44px;">
+
+  <div class="tool-card">
+    <div class="tool-icon">&#128208;</div>
+    <h3>Overhang Test</h3>
+    <p>11 fins from 20&deg; to 70&deg;. Find your printer's maximum overhang angle before supports become necessary.</p>
+    <a href="/test-prints#overhang-test" class="btn btn-outline">View</a>
+  </div>
+
+  <div class="tool-card">
+    <div class="tool-icon">&#128260;</div>
+    <h3>Retraction / Stringing Test</h3>
+    <p>Seven towers that isolate stringing. Dial in retraction distance and speed to get clean, string-free prints.</p>
+    <a href="/test-prints#retraction-test" class="btn btn-outline">View</a>
+  </div>
+
+  <div class="tool-card">
+    <div class="tool-icon">&#127774;</div>
+    <h3>Bridging Test</h3>
+    <p>Five spans from 10mm to 50mm. Find the longest gap your printer can bridge without sagging or needing supports.</p>
+    <a href="/test-prints#bridging-test" class="btn btn-outline">View</a>
+  </div>
+
+  <div class="tool-card">
+    <div class="tool-icon">&#9638;</div>
+    <h3>First Layer Calibration</h3>
+    <p>A 60&times;60mm grid that makes Z offset problems obvious. Get your first layer right in under 5 minutes.</p>
+    <a href="/test-prints#first-layer-test" class="btn btn-outline">View</a>
+  </div>
+
+  <div class="tool-card">
+    <div class="tool-icon">&#127777;&#65039;</div>
+    <h3>Temperature Tower</h3>
+    <p>Six segments printed at different temps in one go. Find the ideal temperature for any filament brand.</p>
+    <a href="/test-prints#temp-tower" class="btn btn-outline">View</a>
+  </div>
+
+  <div class="tool-card">
+    <div class="tool-icon">&#9881;&#65039;</div>
+    <h3>Flow Rate Test</h3>
+    <p>Five tiles at 90%&ndash;110% flow. Dial in extrusion multiplier to eliminate under- or over-extrusion.</p>
+    <a href="/test-prints#flow-rate-test" class="btn btn-outline">View</a>
+  </div>
+
+  <div class="tool-card">
+    <div class="tool-icon">&#11835;</div>
+    <h3>Ironing Test</h3>
+    <p>Four tiles comparing ironing flow rates. Find the setting that gives you the smoothest top surface.</p>
+    <a href="/test-prints#ironing-test" class="btn btn-outline">View</a>
+  </div>
+
+</div>
+
+<h2 style="font-size:1.15rem; font-weight:700; margin-bottom:6px;">&#128214; Quick Guides</h2>
+<p style="color:var(--muted); font-size:0.9rem; margin-bottom:18px;">In-depth reference guides for slicer setup, troubleshooting, filament, and calibration. Paid members only.</p>
+
+<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:20px; margin-bottom:44px;">
+
+  <div class="tool-card">
+    <div class="tool-icon">&#128295;</div>
+    <h3>FDM Troubleshooting Reference</h3>
+    <p>Covers stringing, bed adhesion, under/over-extrusion, warping, and layer separation with causes and fixes.</p>
+    <a href="/guides/fdm-troubleshooting" class="btn btn-outline">Open</a>
+  </div>
+
+  <div class="tool-card">
+    <div class="tool-icon">&#128421;&#65039;</div>
+    <h3>OrcaSlicer Quick Guide</h3>
+    <p>Printer setup, essential settings, and how to use OrcaSlicer's built-in calibration tools effectively.</p>
+    <a href="/guides/orcaslicer-guide" class="btn btn-outline">Open</a>
+  </div>
+
+  <div class="tool-card">
+    <div class="tool-icon">&#128421;&#65039;</div>
+    <h3>PrusaSlicer Quick Guide</h3>
+    <p>Profiles, support painting, variable layer height, and the settings that matter most for good results.</p>
+    <a href="/guides/prusaslicer-guide" class="btn btn-outline">Open</a>
+  </div>
+
+  <div class="tool-card">
+    <div class="tool-icon">&#128421;&#65039;</div>
+    <h3>Cura Quick Guide</h3>
+    <p>Printer setup, plugin recommendations, and the Cura settings most people overlook.</p>
+    <a href="/guides/cura-guide" class="btn btn-outline">Open</a>
+  </div>
+
+  <div class="tool-card">
+    <div class="tool-icon">&#127981;</div>
+    <h3>Filament Quick Reference</h3>
+    <p>PLA, PETG, ABS, ASA, TPU, and Nylon &mdash; temperature, bed, cooling, and storage requirements at a glance.</p>
+    <a href="/guides/filament-reference" class="btn btn-outline">Open</a>
+  </div>
+
+  <div class="tool-card">
+    <div class="tool-icon">&#9989;</div>
+    <h3>Calibration Checklist</h3>
+    <p>The correct order to calibrate a new printer or diagnose ongoing print quality issues, step by step.</p>
+    <a href="/guides/calibration-checklist" class="btn btn-outline">Open</a>
+  </div>
+
+</div>
+
+{% if not user or not user.is_paid %}
+<div style="background:var(--bg-alt); border:1px solid var(--border); border-radius:10px; padding:28px; text-align:center;">
+  <h2 style="margin-bottom:8px;">Unlock everything</h2>
+  <p style="color:var(--muted); margin-bottom:20px; max-width:480px; margin-left:auto; margin-right:auto;">Upgrade for unlimited tool use, full step-by-step guides for all 7 calibration test prints, STL downloads, and all 6 quick reference guides.</p>
+  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; text-align:left; max-width:540px; margin:0 auto 24px;">
+    <div><strong>1. Register free</strong><p style="color:var(--muted);font-size:0.9rem;margin-top:4px;">No card needed</p></div>
+    <div><strong>2. Try the tools</strong><p style="color:var(--muted);font-size:0.9rem;margin-top:4px;">3 free uses</p></div>
+    <div><strong>3. Upgrade when ready</strong><p style="color:var(--muted);font-size:0.9rem;margin-top:4px;">&pound;2/mo or &pound;5 once</p></div>
+  </div>
+  {% if not user %}
+  <a href="/register" class="btn">Get started free &rarr;</a>
+  {% else %}
   <a href="/upgrade" class="btn">Upgrade now &rarr;</a>
+  {% endif %}
 </div>
 {% endif %}
 

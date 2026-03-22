@@ -200,9 +200,13 @@ def index():
     return render_template('index.html', user=get_current_user())
 
 @app.route('/dashboard')
-@login_required
 def dashboard():
     return render_template('dashboard.html', user=get_current_user())
+
+@app.route('/account')
+@login_required
+def account():
+    return render_template('account.html', user=get_current_user())
 
 # ── Tool data ─────────────────────────────────────────────────────────────────
 

@@ -87,11 +87,12 @@
       <a href="/" class="logo">Print3D<span>Buddy</span></a>
     </div>
     <ul class="nav-links">
-      <li><a href="/">Services</a></li>
+      <li><a href="/dashboard">Dashboard</a></li>
+      <li><a href="/">Tools</a></li>
       <li><a href="/test-prints">Test Prints</a></li>
       <li><a href="/guides">Quick Guides</a></li>
       {% if user %}
-        <li><a href="/dashboard">Account</a></li>
+        <li><a href="/account">Account</a></li>
         <li><a href="/logout">Log out</a></li>
         {% if not user.is_paid %}
           <li><a href="/upgrade" class="nav-btn">Upgrade &mdash; from &pound;2/mo</a></li>

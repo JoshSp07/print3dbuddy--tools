@@ -1353,6 +1353,22 @@ def download_stl(slug):
     return redirect(f'https://print3dbuddy.com/static/stl/{filename}')
 
 
+@app.route('/admin/grant-premium')
+def admin_grant_premium():
+    key   = request.args.get('key', '')
+    email = request.args.get('email', '').strip().lower()
+    if key != os.environ.get('ADMIN_KEY', 'changeme-set-admin-key'):
+        return 'Unauthorized', 403
+    if not email:
+        return 'Missing email', 400
+    db_execute("UPDATE users SET is_paid=1, payment_type='manual' WHERE email=%s", (email,))
+    db_commit()
+    user = db_fetchone('SELECT id, email, is_paid FROM users WHERE email=%s', (email,))
+    if not user:
+        return f'No user found with email: {email}', 404
+    return f'Done. {email} is now premium (is_paid={user["is_paid"]}).', 200
+
+
 @app.route('/robots.txt')
 def robots():
     from flask import Response

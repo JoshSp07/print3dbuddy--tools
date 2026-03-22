@@ -1353,6 +1353,20 @@ def download_stl(slug):
     return redirect(f'https://print3dbuddy.com/static/stl/{filename}')
 
 
+@app.route('/robots.txt')
+def robots():
+    from flask import Response
+    content = (
+        "User-agent: *\n"
+        "Allow: /\n"
+        "Disallow: /dashboard\n"
+        "Disallow: /logout\n"
+        "Disallow: /download/\n"
+        "Sitemap: https://tools.print3dbuddy.com/sitemap.xml\n"
+    )
+    return Response(content, mimetype='text/plain')
+
+
 @app.route('/sitemap.xml')
 def sitemap():
     from flask import Response

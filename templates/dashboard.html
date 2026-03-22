@@ -27,10 +27,10 @@
   <div style="background:#fff; border:1px solid var(--border); border-radius:10px; padding:24px;">
     <p style="font-size:0.78rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--muted); margin-bottom:10px;">Membership</p>
     {% if user.is_paid %}
-      <span class="uses-badge paid">&#10003; Paid &mdash; Unlimited</span>
+      <span class="uses-badge paid">&#10003; Paid - Unlimited</span>
       <p style="font-size:0.82rem; color:var(--muted); margin-top:10px;">Full access to all features.</p>
     {% else %}
-      <span class="uses-badge">Free &mdash; {{ user.uses_remaining }} use{{ 's' if user.uses_remaining != 1 else '' }} left</span>
+      <span class="uses-badge">Free - {{ user.uses_remaining }} use{{ 's' if user.uses_remaining != 1 else '' }} left</span>
       <p style="font-size:0.82rem; color:var(--muted); margin-top:10px;"><a href="/upgrade">Upgrade for unlimited access &rarr;</a></p>
     {% endif %}
   </div>

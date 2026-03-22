@@ -20,10 +20,10 @@
     <label for="use_case">How will the part be used?</label>
     <select id="use_case" name="use_case" required>
       <option value="">-- Select use case --</option>
-      <option value="decorative"  {% if sel.get('use_case') == 'decorative' %}selected{% endif %}>Decorative &mdash; display pieces, figurines, ornaments</option>
-      <option value="functional"  {% if sel.get('use_case') == 'functional' or not sel %}selected{% endif %}>Functional &mdash; brackets, mounts, handles, everyday parts</option>
-      <option value="structural"  {% if sel.get('use_case') == 'structural' %}selected{% endif %}>Structural &mdash; high-load, mechanical, safety-critical</option>
-      <option value="flexible"    {% if sel.get('use_case') == 'flexible' %}selected{% endif %}>Flexible &mdash; grips, gaskets, phone cases, dampeners</option>
+      <option value="decorative"  {% if sel.get('use_case') == 'decorative' %}selected{% endif %}>Decorative - display pieces, figurines, ornaments</option>
+      <option value="functional"  {% if sel.get('use_case') == 'functional' or not sel %}selected{% endif %}>Functional - brackets, mounts, handles, everyday parts</option>
+      <option value="structural"  {% if sel.get('use_case') == 'structural' %}selected{% endif %}>Structural - high-load, mechanical, safety-critical</option>
+      <option value="flexible"    {% if sel.get('use_case') == 'flexible' %}selected{% endif %}>Flexible - grips, gaskets, phone cases, dampeners</option>
     </select>
 
     <label for="material">Filament material</label>

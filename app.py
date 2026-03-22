@@ -654,7 +654,7 @@ NOZZLE_DB = {
         'layer_height': '0.05–0.15mm',
         'speed': '20–40mm/s',
         'best_for': 'Miniatures, fine text, jewellery, intricate models',
-        'avoid': 'Large prints — very slow. Abrasive filaments will wear brass quickly.',
+        'avoid': 'Large prints - very slow. Abrasive filaments will wear brass quickly.',
         'notes': 'Requires a well-tuned printer with minimal play. Prone to clogging with low-quality filament. Dry your filament before printing.',
     },
     ('detail', 'abrasive'): {
@@ -662,15 +662,15 @@ NOZZLE_DB = {
         'layer_height': '0.1–0.2mm',
         'speed': '30–50mm/s',
         'best_for': 'Detailed prints in carbon fibre or glass-filled filaments',
-        'avoid': 'Brass nozzles — abrasive materials destroy them within hours.',
+        'avoid': 'Brass nozzles - abrasive materials destroy them within hours.',
         'notes': 'Hardened steel is mandatory for CF/GF filaments. Expect slightly rougher surface finish than brass. Increase temperature by 5–10°C vs standard settings.',
     },
     ('standard', 'standard'): {
         'size': '0.4mm', 'material': 'Brass',
         'layer_height': '0.1–0.3mm',
         'speed': '40–80mm/s',
-        'best_for': 'General purpose printing — the best all-rounder',
-        'avoid': 'Nothing specific — this is the safest default choice.',
+        'best_for': 'General purpose printing - the best all-rounder',
+        'avoid': 'Nothing specific - this is the safest default choice.',
         'notes': 'The 0.4mm nozzle is the industry standard for good reason. Balances detail, speed, and reliability. Most slicer profiles default to this size.',
     },
     ('standard', 'abrasive'): {
@@ -678,15 +678,15 @@ NOZZLE_DB = {
         'layer_height': '0.1–0.3mm',
         'speed': '30–60mm/s',
         'best_for': 'CF/GF/metal-filled filaments at standard quality',
-        'avoid': 'Brass — will wear out within a few hundred grams of abrasive filament.',
-        'notes': 'Hardened steel is non-negotiable for abrasive materials. Some grades of hardened steel have slightly lower thermal conductivity — bump temperature up 5°C if under-extruding.',
+        'avoid': 'Brass - will wear out within a few hundred grams of abrasive filament.',
+        'notes': 'Hardened steel is non-negotiable for abrasive materials. Some grades of hardened steel have slightly lower thermal conductivity - bump temperature up 5°C if under-extruding.',
     },
     ('functional', 'standard'): {
         'size': '0.4mm or 0.6mm', 'material': 'Brass',
         'layer_height': '0.15–0.3mm',
         'speed': '40–80mm/s',
         'best_for': 'Brackets, mounts, enclosures, mechanical parts',
-        'avoid': '0.2mm for structural parts — too slow and marginal strength gain.',
+        'avoid': '0.2mm for structural parts - too slow and marginal strength gain.',
         'notes': 'A 0.6mm nozzle gives significantly stronger layer bonding for functional parts and is worth considering. Wall count matters more than infill for strength.',
     },
     ('functional', 'abrasive'): {
@@ -694,7 +694,7 @@ NOZZLE_DB = {
         'layer_height': '0.2–0.35mm',
         'speed': '30–60mm/s',
         'best_for': 'Strong, wear-resistant functional parts in CF/GF filament',
-        'avoid': 'Anything smaller with abrasive filament — higher clog risk.',
+        'avoid': 'Anything smaller with abrasive filament - higher clog risk.',
         'notes': 'CF and GF filaments produce very strong parts. The 0.6mm reduces clog risk with these materials. Combine with 3+ walls for best mechanical properties.',
     },
     ('large', 'standard'): {
@@ -702,15 +702,15 @@ NOZZLE_DB = {
         'layer_height': '0.3–0.5mm',
         'speed': '60–120mm/s',
         'best_for': 'Large prototypes, terrain, props, vases, architectural models',
-        'avoid': 'Fine detail — layer lines will be very visible.',
+        'avoid': 'Fine detail - layer lines will be very visible.',
         'notes': 'Larger nozzles deposit more material per pass, dramatically cutting print time. A 0.8mm nozzle at 0.4mm layer height can be 4-5x faster than a 0.4mm nozzle. Great for drafts and large decorative pieces.',
     },
     ('large', 'abrasive'): {
         'size': '0.8mm', 'material': 'Hardened steel',
         'layer_height': '0.3–0.5mm',
         'speed': '40–80mm/s',
-        'best_for': 'Large parts in abrasive materials — strongest possible output',
-        'avoid': 'Detail work — surface finish will be rough.',
+        'best_for': 'Large parts in abrasive materials - strongest possible output',
+        'avoid': 'Detail work - surface finish will be rough.',
         'notes': 'Maximum throughput with abrasive filament. Hardened steel is essential. This combination produces extremely strong large parts quickly.',
     },
 }
@@ -765,7 +765,7 @@ INFILL_DB = {
     ('functional', 'pla'): {
         'density': '20–40%', 'pattern': 'Gyroid or Cubic',
         'walls': '3–4', 'top_bottom': '4–5 layers',
-        'notes': 'For brackets, mounts, and everyday functional parts. Walls contribute more to strength than infill — prioritise 4 walls over high infill %. Gyroid and Cubic distribute stress evenly in all directions.',
+        'notes': 'For brackets, mounts, and everyday functional parts. Walls contribute more to strength than infill - prioritise 4 walls over high infill %. Gyroid and Cubic distribute stress evenly in all directions.',
     },
     ('functional', 'petg'): {
         'density': '20–35%', 'pattern': 'Gyroid',
@@ -780,7 +780,7 @@ INFILL_DB = {
     ('functional', 'tpu'): {
         'density': '15–25%', 'pattern': 'Gyroid',
         'walls': '2–3', 'top_bottom': '3 layers',
-        'notes': 'TPU functional parts like grips and gaskets benefit from gyroid infill which gives consistent, predictable flex. Higher infill makes the part stiffer — adjust to taste.',
+        'notes': 'TPU functional parts like grips and gaskets benefit from gyroid infill which gives consistent, predictable flex. Higher infill makes the part stiffer - adjust to taste.',
     },
     ('structural', 'pla'): {
         'density': '40–60%', 'pattern': 'Cubic or Honeycomb',
@@ -790,7 +790,7 @@ INFILL_DB = {
     ('structural', 'petg'): {
         'density': '40–60%', 'pattern': 'Cubic or Gyroid',
         'walls': '4–5', 'top_bottom': '5–6 layers',
-        'notes': 'PETG is the best common material for structural parts — tougher than PLA and more heat resistant. Combine with 5 walls and 50% infill for maximum strength.',
+        'notes': 'PETG is the best common material for structural parts - tougher than PLA and more heat resistant. Combine with 5 walls and 50% infill for maximum strength.',
     },
     ('structural', 'abs'): {
         'density': '40–60%', 'pattern': 'Cubic',
@@ -800,12 +800,12 @@ INFILL_DB = {
     ('structural', 'tpu'): {
         'density': '30–50%', 'pattern': 'Gyroid',
         'walls': '4', 'top_bottom': '4 layers',
-        'notes': 'Structural TPU parts — like shock absorbers or vibration dampeners — need enough infill to resist compression fatigue. Gyroid is the best pattern for repeated loading.',
+        'notes': 'Structural TPU parts - like shock absorbers or vibration dampeners - need enough infill to resist compression fatigue. Gyroid is the best pattern for repeated loading.',
     },
     ('flexible', 'pla'): {
         'density': '10–20%', 'pattern': 'Gyroid',
         'walls': '2', 'top_bottom': '2–3 layers',
-        'notes': 'PLA is not naturally flexible, so low infill and thin walls are needed to achieve any give. For truly flexible parts, switch to TPU — PLA will snap rather than flex under real load.',
+        'notes': 'PLA is not naturally flexible, so low infill and thin walls are needed to achieve any give. For truly flexible parts, switch to TPU - PLA will snap rather than flex under real load.',
     },
     ('flexible', 'petg'): {
         'density': '10–15%', 'pattern': 'Gyroid',

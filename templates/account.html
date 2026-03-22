@@ -10,10 +10,10 @@
   <div style="border:1px solid var(--border); border-radius:10px; padding:24px;">
     <h2 style="font-size:1rem; font-weight:700; margin-bottom:12px;">Membership</h2>
     {% if user.is_paid %}
-      <span class="uses-badge paid">&#10003; Paid &mdash; Unlimited access</span>
+      <span class="uses-badge paid">&#10003; Paid - Unlimited access</span>
       <p style="color:var(--muted); font-size:0.88rem; margin-top:12px;">You have full access to all tools, test print guides, STL downloads, and quick guides.</p>
     {% else %}
-      <span class="uses-badge">Free &mdash; {{ user.uses_remaining }} use{{ 's' if user.uses_remaining != 1 else '' }} remaining</span>
+      <span class="uses-badge">Free - {{ user.uses_remaining }} use{{ 's' if user.uses_remaining != 1 else '' }} remaining</span>
       <p style="color:var(--muted); font-size:0.88rem; margin-top:12px;">Free accounts get 3 uses across all tools. Upgrade for unlimited access.</p>
       <a href="/upgrade" style="display:inline-block; margin-top:12px; font-weight:600; font-size:0.9rem; color:var(--accent);">Upgrade &rarr;</a>
     {% endif %}

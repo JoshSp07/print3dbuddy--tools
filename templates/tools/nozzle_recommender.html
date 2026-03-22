@@ -20,17 +20,17 @@
     <label for="purpose">What are you primarily printing?</label>
     <select id="purpose" name="purpose" required>
       <option value="">-- Select purpose --</option>
-      <option value="detail"     {% if sel.get('purpose') == 'detail' %}selected{% endif %}>Fine detail &mdash; miniatures, fine text, jewellery</option>
-      <option value="standard"   {% if sel.get('purpose') == 'standard' or not sel %}selected{% endif %}>General purpose &mdash; everyday prints</option>
-      <option value="functional" {% if sel.get('purpose') == 'functional' %}selected{% endif %}>Functional parts &mdash; brackets, mounts, enclosures</option>
-      <option value="large"      {% if sel.get('purpose') == 'large' %}selected{% endif %}>Large or fast prints &mdash; prototypes, terrain, props</option>
+      <option value="detail"     {% if sel.get('purpose') == 'detail' %}selected{% endif %}>Fine detail - miniatures, fine text, jewellery</option>
+      <option value="standard"   {% if sel.get('purpose') == 'standard' or not sel %}selected{% endif %}>General purpose - everyday prints</option>
+      <option value="functional" {% if sel.get('purpose') == 'functional' %}selected{% endif %}>Functional parts - brackets, mounts, enclosures</option>
+      <option value="large"      {% if sel.get('purpose') == 'large' %}selected{% endif %}>Large or fast prints - prototypes, terrain, props</option>
     </select>
 
     <label for="material">Filament type</label>
     <select id="material" name="material" required>
       <option value="">-- Select filament type --</option>
-      <option value="standard"  {% if sel.get('material') == 'standard' or not sel %}selected{% endif %}>Standard &mdash; PLA, PETG, ABS, ASA, TPU</option>
-      <option value="abrasive"  {% if sel.get('material') == 'abrasive' %}selected{% endif %}>Abrasive &mdash; carbon fibre, glass-filled, metal-filled</option>
+      <option value="standard"  {% if sel.get('material') == 'standard' or not sel %}selected{% endif %}>Standard - PLA, PETG, ABS, ASA, TPU</option>
+      <option value="abrasive"  {% if sel.get('material') == 'abrasive' %}selected{% endif %}>Abrasive - carbon fibre, glass-filled, metal-filled</option>
     </select>
 
     <button type="submit" class="btn">Get recommendation</button>

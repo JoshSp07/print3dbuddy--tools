@@ -4,12 +4,12 @@
 
 <div style="margin-bottom:32px;">
   <h1 style="font-size:1.8rem; font-weight:800; margin-bottom:8px;">Calibration Test Prints</h1>
-  <p style="color:var(--muted); font-size:1.05rem; max-width:600px;">Five prints to dial in your FDM printer. Each targets a specific setting &mdash; print it, read the result, fix the problem.</p>
+  <p style="color:var(--muted); font-size:1.05rem; max-width:600px;">Five prints to dial in your FDM printer. Each targets a specific setting - print it, read the result, fix the problem.</p>
 
   {% if not user %}
   <div style="margin-top:20px; background:#fff8f5; border:2px solid var(--accent); border-radius:10px; padding:20px 24px;">
     <strong style="display:block; margin-bottom:6px;">Create a free account to get started.</strong>
-    <p style="color:var(--muted); font-size:0.9rem; margin-bottom:14px;">Paid members get full step-by-step guides and STL downloads for all 5 prints &mdash; &pound;2/month or &pound;5 one-time.</p>
+    <p style="color:var(--muted); font-size:0.9rem; margin-bottom:14px;">Paid members get full step-by-step guides and STL downloads for all 5 prints - &pound;2/month or &pound;5 one-time.</p>
     <div style="display:flex; gap:12px; flex-wrap:wrap;">
       <a href="/register" class="btn">Register free</a>
       <a href="/login" class="btn btn-outline">Log in</a>
@@ -18,12 +18,12 @@
   {% elif not user.is_paid %}
   <div style="margin-top:20px; background:#fff8f5; border:1px solid #f0d5c8; border-radius:10px; padding:20px 24px;">
     <strong style="display:block; margin-bottom:4px;">Upgrade for full guides and STL downloads.</strong>
-    <p style="color:var(--muted); font-size:0.9rem; margin-bottom:14px;">&pound;2/month or &pound;5 one-time &mdash; includes all 5 calibration prints + unlimited tool access.</p>
+    <p style="color:var(--muted); font-size:0.9rem; margin-bottom:14px;">&pound;2/month or &pound;5 one-time - includes all 5 calibration prints + unlimited tool access.</p>
     <a href="/upgrade" class="btn">Upgrade now &rarr;</a>
   </div>
   {% else %}
   <div style="margin-top:16px; background:#f0fdf4; border:1px solid #86efac; border-radius:8px; padding:14px 20px; font-size:0.9rem; color:#166534;">
-    &#10003; You have full access &mdash; all guides and STL downloads are unlocked below.
+    &#10003; You have full access - all guides and STL downloads are unlocked below.
   </div>
   {% endif %}
 </div>

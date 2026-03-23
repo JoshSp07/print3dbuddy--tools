@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Temp Tower Helper{% endblock %}
+{% block content %}
+
+<div style="margin-bottom:8px;">
+  <a href="/dashboard" style="color:var(--muted); font-size:0.9rem;">&larr; Back to tools</a>
+</div>
+
+<h1 style="font-size:1.6rem; margin-bottom:4px;">Temp Tower Helper</h1>
+<p style="color:var(--muted); margin-bottom:4px;">Get the exact layer numbers for each temperature change in your temp tower.</p>
+
+{% if not user.is_paid %}
+<p style="margin-bottom:24px;"><span class="uses-badge">{{ user.uses_remaining }} free use{{ 's' if user.uses_remaining != 1 else '' }} remaining</span></p>
+{% else %}
+<p style="margin-bottom:24px;"><span class="uses-badge paid">Unlimited access</span></p>
+{% endif %}
+
+<div class="card">
+  <form method="POST">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0 20px;">
+      <div>
+        <label for="start_temp">Starting temperature (&deg;C)</label>
+        <input type="number" id="start_temp" name="start_temp" value="{{ sel.get('start_temp', 220) }}" min="150" max="350" required>
+      </div>
+      <div>
+        <label for="end_temp">Ending temperature (&deg;C)</label>
+        <input type="number" id="end_temp" name="end_temp" value="{{ sel.get('end_temp', 190) }}" min="150" max="350" required>
+      </div>
+      <div>
+        <label for="segments">Number of segments</label>
+        <input type="number" id="segments" name="segments" value="{{ sel.get('segments', 7) }}" min="2" max="15" required>
+      </div>
+      <div>
+        <label for="layer_height">Layer height (mm)</label>
+        <input type="number" id="layer_height" name="layer_height" value="{{ sel.get('layer_height', 0.2) }}" step="0.05" min="0.05" max="0.5" required>
+      </div>
+      <div>
+        <label for="segment_height">Height per segment (mm)</label>
+        <input type="number" id="segment_height" name="segment_height" value="{{ sel.get('segment_height', 10) }}" step="1" min="5" max="30" required>
+      </div>
+      <div>
+        <label for="start_layer">First temp tower layer</label>
+        <input type="number" id="start_layer" name="start_layer" value="{{ sel.get('start_layer', 3) }}" min="1" max="20" required>
+        <p style="font-size:0.8rem; color:var(--muted); margin-top:4px;">Layer where the tower body starts (after any base)</p>
+      </div>
+    </div>
+    <button type="submit" class="btn" style="margin-top:8px;">Calculate layers</button>
+  </form>
+</div>
+
+{% if result %}
+<div class="result-box">
+  <h3>Temperature changes</h3>
+  <p style="color:var(--muted); font-size:0.88rem; margin-bottom:16px;">{{ result.layers_per_seg }} layers per segment ({{ result.seg_height }}mm each). Add a temperature change script at each layer below.</p>
+
+  <table>
+    <thead>
+      <tr><th>Segment</th><th>Change at layer</th><th>Set temp to</th></tr>
+    </thead>
+    <tbody>
+      {% for step in result.steps %}
+      <tr>
+        <td>{{ step.segment }}</td>
+        <td><strong>{{ step.layer }}</strong></td>
+        <td>{{ step.temp }}&deg;C</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div style="margin-top:16px; padding:14px; background:#fff; border-radius:6px; border:1px solid var(--border);">
+    <strong style="display:block; margin-bottom:8px;">How to use this in your slicer</strong>
+    <p style="color:var(--muted); font-size:0.9rem; margin-bottom:8px;"><strong>OrcaSlicer / Bambu Studio:</strong> Use the Filament Change feature or add a custom gcode at the layer: <code>M104 S[temp]</code></p>
+    <p style="color:var(--muted); font-size:0.9rem; margin-bottom:8px;"><strong>PrusaSlicer:</strong> Layer &rarr; Add Custom G-code at layer height &rarr; enter <code>M104 S[temp]</code></p>
+    <p style="color:var(--muted); font-size:0.9rem; margin:0;"><strong>Cura:</strong> Use the ChangeAtZ plugin or add a post-processing script to change temperature at each layer number.</p>
+  </div>
+</div>
+{% endif %}
+
+{% if not user.is_paid and user.uses_remaining == 0 %}
+<div style="background:#fff8f5; border:2px solid var(--accent); border-radius:10px; padding:24px; margin-top:24px; text-align:center;">
+  <h3 style="margin-bottom:8px;">You've used all your free uses</h3>
+  <p style="color:var(--muted); margin-bottom:16px;">Upgrade for unlimited access for &pound;5 one-time or &pound;2/month.</p>
+  <a href="/upgrade" class="btn">Upgrade now</a>
+</div>
+{% endif %}
+
+{% endblock %}

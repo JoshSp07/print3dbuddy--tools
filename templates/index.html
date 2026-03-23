@@ -5,7 +5,7 @@
 <div style="margin-bottom:36px;">
   <h1 style="font-size:1.9rem; font-weight:800; margin-bottom:8px;">Calculators &amp; Tools</h1>
   <p style="color:var(--muted); font-size:1.05rem; max-width:560px;">
-    Four free-to-try tools to help you get better results faster - cost estimates, print settings, slicer recommendations, and filament estimates from STL files.
+    Ten free-to-try tools to help you get better results faster - cost estimates, print settings, retraction, print time, filament conversion, and more.
   </p>
   {% if user %}
   <p style="color:var(--muted); font-size:0.9rem; margin-top:14px;">Logged in as {{ user.email }} - <a href="/account">My Account</a> &middot; <a href="/logout">Log out</a></p>
@@ -55,6 +55,30 @@
     <h3>Infill Density Recommender</h3>
     <p>Select your use case and material. Get a recommended infill percentage, pattern, and wall count.</p>
     <a href="{% if user %}/tools/infill-recommender{% else %}/register{% endif %}" class="btn">Use tool</a>
+  </div>
+  <div class="tool-card">
+    <div class="tool-icon">&#8617;</div>
+    <h3>Retraction Calculator</h3>
+    <p>Pick your extruder type and filament. Get a starting retraction distance, speed, and tuning range.</p>
+    <a href="{% if user %}/tools/retraction-calculator{% else %}/register{% endif %}" class="btn">Use tool</a>
+  </div>
+  <div class="tool-card">
+    <div class="tool-icon">&#128336;</div>
+    <h3>Print Time Estimator</h3>
+    <p>Enter your model dimensions, layer height, infill, and speed for a rough time estimate before you slice.</p>
+    <a href="{% if user %}/tools/print-time-estimator{% else %}/register{% endif %}" class="btn">Use tool</a>
+  </div>
+  <div class="tool-card">
+    <div class="tool-icon">&#127777;&#65039;</div>
+    <h3>Temp Tower Helper</h3>
+    <p>Get the exact layer numbers for each temperature change in your temp tower - no manual maths needed.</p>
+    <a href="{% if user %}/tools/temp-tower-helper{% else %}/register{% endif %}" class="btn">Use tool</a>
+  </div>
+  <div class="tool-card">
+    <div class="tool-icon">&#9878;&#65039;</div>
+    <h3>Filament Length / Weight Converter</h3>
+    <p>Convert between filament weight and length for any material and diameter. Useful for estimating leftover spool amounts.</p>
+    <a href="{% if user %}/tools/filament-converter{% else %}/register{% endif %}" class="btn">Use tool</a>
   </div>
 </div>
 

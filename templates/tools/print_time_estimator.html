@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Print Time Estimator{% endblock %}
+{% block content %}
+
+<div style="margin-bottom:8px;">
+  <a href="/dashboard" style="color:var(--muted); font-size:0.9rem;">&larr; Back to tools</a>
+</div>
+
+<h1 style="font-size:1.6rem; margin-bottom:4px;">Print Time Estimator</h1>
+<p style="color:var(--muted); margin-bottom:4px;">Get a rough time estimate before opening your slicer.</p>
+
+{% if not user.is_paid %}
+<p style="margin-bottom:24px;"><span class="uses-badge">{{ user.uses_remaining }} free use{{ 's' if user.uses_remaining != 1 else '' }} remaining</span></p>
+{% else %}
+<p style="margin-bottom:24px;"><span class="uses-badge paid">Unlimited access</span></p>
+{% endif %}
+
+<div class="card">
+  <form method="POST">
+    <p style="color:var(--muted); font-size:0.88rem; margin-bottom:16px;">Enter the bounding box of your model and basic print settings.</p>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0 20px;">
+      <div>
+        <label for="x">Width - X (mm)</label>
+        <input type="number" id="x" name="x" value="{{ sel.get('x', 50) }}" step="1" min="1" max="500" required>
+      </div>
+      <div>
+        <label for="y">Depth - Y (mm)</label>
+        <input type="number" id="y" name="y" value="{{ sel.get('y', 50) }}" step="1" min="1" max="500" required>
+      </div>
+      <div>
+        <label for="z">Height - Z (mm)</label>
+        <input type="number" id="z" name="z" value="{{ sel.get('z', 50) }}" step="1" min="1" max="500" required>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0 20px; margin-top:4px;">
+      <div>
+        <label for="layer_height">Layer height (mm)</label>
+        <select id="layer_height" name="layer_height">
+          <option value="0.1"  {% if sel.get('layer_height') == 0.1  %}selected{% endif %}>0.1mm - fine</option>
+          <option value="0.15" {% if sel.get('layer_height') == 0.15 %}selected{% endif %}>0.15mm</option>
+          <option value="0.2"  {% if not sel or sel.get('layer_height') == 0.2 %}selected{% endif %}>0.2mm - standard</option>
+          <option value="0.25" {% if sel.get('layer_height') == 0.25 %}selected{% endif %}>0.25mm</option>
+          <option value="0.3"  {% if sel.get('layer_height') == 0.3  %}selected{% endif %}>0.3mm - draft</option>
+        </select>
+      </div>
+      <div>
+        <label for="infill">Infill (%)</label>
+        <select id="infill" name="infill">
+          <option value="10"  {% if sel.get('infill') == 10 %}selected{% endif %}>10%</option>
+          <option value="15"  {% if sel.get('infill') == 15 %}selected{% endif %}>15%</option>
+          <option value="20"  {% if not sel or sel.get('infill') == 20 %}selected{% endif %}>20%</option>
+          <option value="30"  {% if sel.get('infill') == 30 %}selected{% endif %}>30%</option>
+          <option value="40"  {% if sel.get('infill') == 40 %}selected{% endif %}>40%</option>
+          <option value="50"  {% if sel.get('infill') == 50 %}selected{% endif %}>50%</option>
+        </select>
+      </div>
+      <div>
+        <label for="speed">Print speed (mm/s)</label>
+        <select id="speed" name="speed">
+          <option value="40"  {% if sel.get('speed') == 40  %}selected{% endif %}>40 mm/s - slow</option>
+          <option value="60"  {% if not sel or sel.get('speed') == 60 %}selected{% endif %}>60 mm/s - standard</option>
+          <option value="80"  {% if sel.get('speed') == 80  %}selected{% endif %}>80 mm/s - fast</option>
+          <option value="120" {% if sel.get('speed') == 120 %}selected{% endif %}>120 mm/s - very fast</option>
+          <option value="200" {% if sel.get('speed') == 200 %}selected{% endif %}>200 mm/s - high speed</option>
+        </select>
+      </div>
+    </div>
+
+    <button type="submit" class="btn" style="margin-top:8px;">Estimate time</button>
+  </form>
+</div>
+
+{% if result %}
+<div class="result-box">
+  <h3>Estimated print time</h3>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:20px;">
+    <div style="background:#fff; border:2px solid var(--accent); border-radius:10px; padding:24px; text-align:center;">
+      <p style="font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--muted); margin-bottom:6px;">Estimated time</p>
+      {% if result.hours > 0 %}
+      <p style="font-size:2rem; font-weight:800; color:var(--accent); margin:0;">{{ result.hours }}h {{ result.minutes }}m</p>
+      {% else %}
+      <p style="font-size:2rem; font-weight:800; color:var(--accent); margin:0;">{{ result.minutes }}m</p>
+      {% endif %}
+    </div>
+    <div style="background:#fff; border:1px solid var(--border); border-radius:10px; padding:24px; text-align:center;">
+      <p style="font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--muted); margin-bottom:6px;">Layers</p>
+      <p style="font-size:2rem; font-weight:800; color:var(--text); margin:0;">{{ result.layers }}</p>
+    </div>
+  </div>
+
+  <div style="padding:12px 16px; background:#fff8f5; border-radius:6px; border:1px solid #fcd9c8; font-size:0.88rem; color:var(--muted);">
+    {{ result.note }}
+  </div>
+</div>
+{% endif %}
+
+{% if not user.is_paid and user.uses_remaining == 0 %}
+<div style="background:#fff8f5; border:2px solid var(--accent); border-radius:10px; padding:24px; margin-top:24px; text-align:center;">
+  <h3 style="margin-bottom:8px;">You've used all your free uses</h3>
+  <p style="color:var(--muted); margin-bottom:16px;">Upgrade for unlimited access for &pound;5 one-time or &pound;2/month.</p>
+  <a href="/upgrade" class="btn">Upgrade now</a>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Retraction Calculator{% endblock %}
+{% block content %}
+
+<div style="margin-bottom:8px;">
+  <a href="/dashboard" style="color:var(--muted); font-size:0.9rem;">&larr; Back to tools</a>
+</div>
+
+<h1 style="font-size:1.6rem; margin-bottom:4px;">Retraction Calculator</h1>
+<p style="color:var(--muted); margin-bottom:4px;">Get a starting retraction distance and speed for your setup.</p>
+
+{% if not user.is_paid %}
+<p style="margin-bottom:24px;"><span class="uses-badge">{{ user.uses_remaining }} free use{{ 's' if user.uses_remaining != 1 else '' }} remaining</span></p>
+{% else %}
+<p style="margin-bottom:24px;"><span class="uses-badge paid">Unlimited access</span></p>
+{% endif %}
+
+<div class="card">
+  <form method="POST">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0 20px;">
+      <div>
+        <label for="extruder">Extruder type</label>
+        <select id="extruder" name="extruder" required>
+          <option value="direct" {% if (sel.get('extruder') == 'direct') or (not sel and profile_extruder == 'direct') or (not sel and not profile_extruder) %}selected{% endif %}>Direct drive</option>
+          <option value="bowden" {% if (sel.get('extruder') == 'bowden') or (not sel and profile_extruder == 'bowden') %}selected{% endif %}>Bowden</option>
+        </select>
+      </div>
+      <div>
+        <label for="material">Filament material</label>
+        <select id="material" name="material" required>
+          {% set pm = profile_material %}
+          <option value="PLA"    {% if (sel.get('material') == 'PLA')    or (not sel and (pm == 'PLA' or pm == 'PLA+' or not pm)) %}selected{% endif %}>PLA / PLA+</option>
+          <option value="PETG"   {% if (sel.get('material') == 'PETG')   or (not sel and pm == 'PETG')   %}selected{% endif %}>PETG</option>
+          <option value="ABS"    {% if (sel.get('material') == 'ABS')    or (not sel and pm == 'ABS')    %}selected{% endif %}>ABS</option>
+          <option value="ASA"    {% if (sel.get('material') == 'ASA')    or (not sel and pm == 'ASA')    %}selected{% endif %}>ASA</option>
+          <option value="TPU"    {% if (sel.get('material') == 'TPU')    or (not sel and pm and pm.startswith('TPU')) %}selected{% endif %}>TPU / Flexible</option>
+          <option value="Nylon"  {% if sel.get('material') == 'Nylon'   %}selected{% endif %}>Nylon</option>
+        </select>
+      </div>
+    </div>
+    <button type="submit" class="btn" style="margin-top:8px;">Calculate</button>
+  </form>
+</div>
+
+{% if result %}
+<div class="result-box">
+  <h3>Retraction settings for {{ result.material }} ({{ result.extruder|replace('direct','Direct drive')|replace('bowden','Bowden') }})</h3>
+
+  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:20px;">
+    <div style="background:#fff; border:2px solid var(--accent); border-radius:10px; padding:18px; text-align:center;">
+      <p style="font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--muted); margin-bottom:6px;">Start here</p>
+      <p style="font-size:1.8rem; font-weight:800; color:var(--accent); margin:0;">{{ result.start }}mm</p>
+    </div>
+    <div style="background:#fff; border:1px solid var(--border); border-radius:10px; padding:18px; text-align:center;">
+      <p style="font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--muted); margin-bottom:6px;">Range</p>
+      <p style="font-size:1.1rem; font-weight:800; color:var(--text); margin:0;">{{ result.min }}&ndash;{{ result.max }}mm</p>
+    </div>
+    <div style="background:#fff; border:1px solid var(--border); border-radius:10px; padding:18px; text-align:center;">
+      <p style="font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--muted); margin-bottom:6px;">Speed</p>
+      <p style="font-size:1.1rem; font-weight:800; color:var(--text); margin:0;">{{ result.speed_min }}&ndash;{{ result.speed_max }}mm/s</p>
+    </div>
+  </div>
+
+  <div style="padding:14px; background:#fff; border-radius:6px; border:1px solid var(--border);">
+    <strong style="display:block; margin-bottom:6px;">Notes</strong>
+    <p style="color:var(--muted); font-size:0.93rem; margin:0; line-height:1.6;">{{ result.notes }}</p>
+  </div>
+
+  <div style="margin-top:14px; padding:12px 16px; background:#fff8f5; border-radius:6px; border:1px solid #fcd9c8; font-size:0.88rem; color:var(--muted);">
+    <strong>How to tune:</strong> Start at the suggested value. If you still get stringing, increase by 0.5mm. If you get gaps or grinding, reduce by 0.5mm. Run a stringing test print after each change.
+  </div>
+</div>
+{% endif %}
+
+{% if not user.is_paid and user.uses_remaining == 0 %}
+<div style="background:#fff8f5; border:2px solid var(--accent); border-radius:10px; padding:24px; margin-top:24px; text-align:center;">
+  <h3 style="margin-bottom:8px;">You've used all your free uses</h3>
+  <p style="color:var(--muted); margin-bottom:16px;">Upgrade for unlimited access for &pound;5 one-time or &pound;2/month.</p>
+  <a href="/upgrade" class="btn">Upgrade now</a>
+</div>
+{% endif %}
+
+{% endblock %}

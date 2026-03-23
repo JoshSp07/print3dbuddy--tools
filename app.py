@@ -883,6 +883,213 @@ def infill_recommender():
     return render_template('tools/infill_recommender.html', user=user, result=result, sel=sel)
 
 
+# ── Tool 7: Retraction Calculator ─────────────────────────────────────────────
+
+RETRACTION_DB = {
+    # (extruder, material): (min_mm, max_mm, speed_min, speed_max, notes)
+    ('direct', 'PLA'):   (0.5, 1.5, 25, 40, 'PLA is forgiving. Start at 1mm and adjust by 0.5mm steps. Most stringing with PLA is a temperature problem - lower temp first before increasing retraction.'),
+    ('direct', 'PETG'):  (0.5, 1.0, 25, 35, 'PETG is sensitive to over-retraction which causes stringing paradoxically. Keep retraction low and enable combing mode. Reduce temperature before increasing retraction.'),
+    ('direct', 'ABS'):   (1.0, 2.0, 30, 40, 'ABS prints hot so more retraction is needed. Enable combing mode to minimise travel over open air. An enclosure helps reduce stringing by keeping the chamber warm.'),
+    ('direct', 'ASA'):   (1.0, 2.0, 30, 40, 'Similar to ABS. Keep retraction conservative and use combing mode. ASA is slightly less prone to stringing than ABS at the same settings.'),
+    ('direct', 'TPU'):   (0.0, 1.0, 20, 30, 'Flexible filaments compress in the extruder, making retraction unreliable. Start at 0mm and only increase if needed. Enable combing mode to avoid travel moves entirely.'),
+    ('direct', 'Nylon'): (1.0, 2.0, 25, 40, 'Nylon absorbs moisture which causes stringing. Dry filament thoroughly before printing. Retraction helps but dry filament makes the biggest difference.'),
+    ('bowden', 'PLA'):   (4.0, 6.0, 40, 60, 'Bowden systems need significantly more retraction to account for the tube length. Start at 5mm and adjust by 0.5mm steps. Enable combing to reduce travel moves.'),
+    ('bowden', 'PETG'):  (3.5, 5.5, 40, 55, 'Keep bowden retraction on the lower end for PETG to avoid over-retraction. Combing mode is especially important with PETG in bowden setups.'),
+    ('bowden', 'ABS'):   (5.0, 7.0, 45, 60, 'Long bowden tubes need higher retraction for ABS. If you are using a tube over 500mm, start toward the higher end of this range.'),
+    ('bowden', 'ASA'):   (5.0, 7.0, 45, 60, 'Same as ABS for bowden. Reduce fan speed to prevent warping and keep the chamber warm if possible.'),
+    ('bowden', 'TPU'):   (0.0, 2.0, 20, 30, 'TPU in a bowden system is difficult. The flexible filament compresses and buckles in the tube. Keep retraction minimal and print slowly. A direct drive upgrade is strongly recommended for TPU.'),
+    ('bowden', 'Nylon'): (4.0, 6.0, 40, 55, 'Dry filament is critical with nylon. Bowden retraction settings are secondary to moisture control. Store and print from a sealed dry box if possible.'),
+}
+
+@app.route('/tools/retraction-calculator', methods=['GET', 'POST'])
+@login_required
+def retraction_calculator():
+    user = get_current_user()
+    result = None
+    sel = {}
+    if request.method == 'POST':
+        if not can_use_tool(user):
+            flash('You have used all your free uses. Upgrade to continue.', 'warning')
+            return redirect(url_for('upgrade'))
+        extruder = request.form.get('extruder', 'direct')
+        material = request.form.get('material', 'PLA')
+        sel = {'extruder': extruder, 'material': material}
+        key = (extruder, material)
+        if key in RETRACTION_DB:
+            mn, mx, spd_mn, spd_mx, notes = RETRACTION_DB[key]
+            result = {
+                'extruder': extruder,
+                'material': material,
+                'min': mn,
+                'max': mx,
+                'start': round((mn + mx) / 2, 1),
+                'speed_min': spd_mn,
+                'speed_max': spd_mx,
+                'notes': notes,
+            }
+            if not user['is_paid']:
+                consume_use(user['id'])
+                user = get_current_user()
+        else:
+            flash('Please select valid options.', 'error')
+    return render_template('tools/retraction_calculator.html', user=user, result=result, sel=sel,
+                           profile_extruder=user['drive_type'] or '',
+                           profile_material=user['default_filament'] or '')
+
+
+# ── Tool 8: Temp Tower Helper ──────────────────────────────────────────────────
+
+@app.route('/tools/temp-tower-helper', methods=['GET', 'POST'])
+@login_required
+def temp_tower_helper():
+    user = get_current_user()
+    result = None
+    sel = {}
+    if request.method == 'POST':
+        if not can_use_tool(user):
+            flash('You have used all your free uses. Upgrade to continue.', 'warning')
+            return redirect(url_for('upgrade'))
+        try:
+            start_temp  = int(request.form.get('start_temp', 220))
+            end_temp    = int(request.form.get('end_temp', 190))
+            segments    = int(request.form.get('segments', 7))
+            layer_h     = float(request.form.get('layer_height', 0.2))
+            seg_height  = float(request.form.get('segment_height', 10.0))
+            start_layer = int(request.form.get('start_layer', 3))
+            sel = {
+                'start_temp': start_temp, 'end_temp': end_temp,
+                'segments': segments, 'layer_height': layer_h,
+                'segment_height': seg_height, 'start_layer': start_layer,
+            }
+            layers_per_seg = round(seg_height / layer_h)
+            steps = []
+            temp_step = (end_temp - start_temp) / max(segments - 1, 1)
+            for i in range(segments):
+                layer = start_layer + i * layers_per_seg
+                temp  = round(start_temp + i * temp_step)
+                steps.append({'segment': i + 1, 'layer': layer, 'temp': temp})
+            result = {
+                'steps': steps,
+                'layers_per_seg': layers_per_seg,
+                'seg_height': seg_height,
+            }
+            if not user['is_paid']:
+                consume_use(user['id'])
+                user = get_current_user()
+        except (ValueError, ZeroDivisionError):
+            flash('Please enter valid numbers.', 'error')
+    return render_template('tools/temp_tower_helper.html', user=user, result=result, sel=sel)
+
+
+# ── Tool 9: Print Time Estimator ───────────────────────────────────────────────
+
+import math as _math
+
+@app.route('/tools/print-time-estimator', methods=['GET', 'POST'])
+@login_required
+def print_time_estimator():
+    user = get_current_user()
+    result = None
+    sel = {}
+    if request.method == 'POST':
+        if not can_use_tool(user):
+            flash('You have used all your free uses. Upgrade to continue.', 'warning')
+            return redirect(url_for('upgrade'))
+        try:
+            x          = float(request.form.get('x', 50))
+            y          = float(request.form.get('y', 50))
+            z          = float(request.form.get('z', 50))
+            layer_h    = float(request.form.get('layer_height', 0.2))
+            infill     = float(request.form.get('infill', 20)) / 100.0
+            speed      = float(request.form.get('speed', 60))  # mm/s
+            sel = {'x': x, 'y': y, 'z': z, 'layer_height': layer_h,
+                   'infill': int(infill * 100), 'speed': speed}
+            layers = z / layer_h
+            perimeter_per_layer = 2 * (x + y)        # mm
+            infill_per_layer    = (x * y * infill) / 0.4  # mm (0.4mm line width)
+            mm_per_layer        = perimeter_per_layer + infill_per_layer
+            total_mm            = layers * mm_per_layer
+            overhead            = 1.35  # acceleration, retractions, layer changes
+            total_sec           = (total_mm / speed) * overhead
+            hours   = int(total_sec // 3600)
+            minutes = int((total_sec % 3600) // 60)
+            result = {
+                'hours': hours,
+                'minutes': minutes,
+                'layers': int(layers),
+                'note': 'This is a rough estimate. Actual time from your slicer will be more accurate.',
+            }
+            if not user['is_paid']:
+                consume_use(user['id'])
+                user = get_current_user()
+        except (ValueError, ZeroDivisionError):
+            flash('Please enter valid numbers.', 'error')
+    return render_template('tools/print_time_estimator.html', user=user, result=result, sel=sel)
+
+
+# ── Tool 10: Filament Converter ────────────────────────────────────────────────
+
+FILAMENT_DENSITY = {
+    'PLA':    1.24,
+    'PLA+':   1.24,
+    'PETG':   1.27,
+    'ABS':    1.04,
+    'ASA':    1.07,
+    'TPU':    1.21,
+    'Nylon':  1.14,
+    'PC':     1.20,
+}
+
+@app.route('/tools/filament-converter', methods=['GET', 'POST'])
+@login_required
+def filament_converter():
+    user = get_current_user()
+    result = None
+    sel = {}
+    if request.method == 'POST':
+        if not can_use_tool(user):
+            flash('You have used all your free uses. Upgrade to continue.', 'warning')
+            return redirect(url_for('upgrade'))
+        try:
+            material   = request.form.get('material', 'PLA')
+            diameter   = float(request.form.get('diameter', 1.75))
+            convert_from = request.form.get('convert_from', 'weight')
+            value      = float(request.form.get('value', 0))
+            sel = {'material': material, 'diameter': diameter,
+                   'convert_from': convert_from, 'value': value}
+            density = FILAMENT_DENSITY.get(material, 1.24)
+            radius_cm = (diameter / 2) / 10.0  # convert mm to cm
+            area_cm2  = _math.pi * radius_cm ** 2
+            if convert_from == 'weight':
+                # weight (g) to length (m)
+                length_cm = value / (area_cm2 * density)
+                length_m  = length_cm / 100
+                result = {
+                    'input_label': f'{value:.0f}g of {material}',
+                    'output_label': 'Length',
+                    'output_value': f'{length_m:.1f} m',
+                    'output_sub': f'({length_m * 100:.0f} cm / {length_m * 3.281:.1f} ft)',
+                }
+            else:
+                # length (m) to weight (g)
+                length_cm = value * 100
+                weight_g  = area_cm2 * length_cm * density
+                result = {
+                    'input_label': f'{value:.1f}m of {material}',
+                    'output_label': 'Weight',
+                    'output_value': f'{weight_g:.0f} g',
+                    'output_sub': f'({weight_g / 1000:.3f} kg)',
+                }
+            if not user['is_paid']:
+                consume_use(user['id'])
+                user = get_current_user()
+        except (ValueError, ZeroDivisionError):
+            flash('Please enter valid numbers.', 'error')
+    return render_template('tools/filament_converter.html', user=user, result=result, sel=sel,
+                           materials=list(FILAMENT_DENSITY.keys()),
+                           profile_material=user['default_filament'] or '')
+
+
 # ── Stripe ────────────────────────────────────────────────────────────────────
 
 @app.route('/upgrade')
@@ -1893,6 +2100,288 @@ QUICK_GUIDES = [
 ]
 
 
+QUICK_GUIDES += [
+    {
+        'id': 'cold-pull',
+        'title': 'How to Do a Cold Pull',
+        'tagline': 'Clear a clogged or dirty nozzle without disassembly.',
+        'tag': 'Maintenance',
+        'icon': '🧹',
+        'covers': ['What a cold pull is', 'Step-by-step method', 'Best filament to use', 'When to repeat', 'When a cold pull is not enough'],
+        'content': '''
+<h2>What Is a Cold Pull?</h2>
+<p>A cold pull (also called an atomic pull) is a method of cleaning the inside of your nozzle by heating it, pushing filament through, then cooling it to a semi-solid state and pulling it out sharply. The filament grabs any debris or burnt material inside the nozzle and pulls it out with it.</p>
+<p>It is the most effective way to clear a partial clog without removing or replacing the nozzle.</p>
+
+<h2>What You Need</h2>
+<ul>
+  <li>A length of filament - nylon works best, PLA works well, PETG is acceptable</li>
+  <li>Access to your printer's temperature controls (via display or host software)</li>
+</ul>
+<div class="tip"><strong>Why nylon?</strong> Nylon is flexible, grips debris well, and handles the temperature range required without snapping. PLA works but is more brittle and may snap on the pull.</div>
+
+<h2>Step-by-Step</h2>
+<ol>
+  <li>Heat the nozzle to full print temperature for your filament (e.g. 220°C for PLA, 250°C for PETG).</li>
+  <li>Manually push filament through the nozzle until it flows freely. If nothing flows, increase temperature by 10°C.</li>
+  <li>While the filament is pushed in, cool the nozzle. For PLA use 80-90°C. For PETG/ABS use 100-110°C. Do not let it go fully cold.</li>
+  <li>Once at target cool temperature, grip the filament close to the cold zone and pull it firmly and quickly straight up. You should feel resistance then a sudden release.</li>
+  <li>Inspect the pulled tip. A successful pull leaves a tip shaped like the inside of the nozzle, often with debris embedded in it.</li>
+  <li>Repeat 3-5 times until the tip comes out clean and pale coloured.</li>
+</ol>
+
+<h2>Reading the Result</h2>
+<table>
+  <tr><th>What the tip looks like</th><th>What it means</th></tr>
+  <tr><td>Clean, pale, nozzle-shaped tip</td><td>Nozzle is clear - you are done</td></tr>
+  <tr><td>Dark or discoloured tip</td><td>Burnt material present - repeat the pull</td></tr>
+  <tr><td>Tip snapped off, nothing in nozzle</td><td>Too cold or pulled too slowly - reheat and retry</td></tr>
+  <tr><td>Filament will not pull free</td><td>Nozzle is too cool - reheat 5°C and retry</td></tr>
+</table>
+
+<h2>When a Cold Pull Is Not Enough</h2>
+<p>If after 5-6 pulls the tip is still dark and flow is not restored, the clog is likely hardened or the nozzle bore is partially blocked. Options at this point:</p>
+<ul>
+  <li>Soak the nozzle in acetone overnight (brass nozzles only - removes ABS/PETG residue)</li>
+  <li>Use a 0.35mm acupuncture needle to clear the bore from the tip while hot</li>
+  <li>Replace the nozzle - a worn or heavily clogged nozzle is cheap to replace</li>
+</ul>
+<div class="warn"><strong>Do not use metal tools in the nozzle while cold.</strong> Always work at print temperature and use appropriate tools to avoid damage.</div>
+''',
+    },
+    {
+        'id': 'z-offset-from-scratch',
+        'title': 'Setting Z Offset From Scratch',
+        'tagline': 'Dial in perfect first layer adhesion step by step.',
+        'tag': 'Calibration',
+        'icon': '📏',
+        'covers': ['What Z offset does', 'Paper method', 'Live adjust method', 'Reading the first layer', 'Common mistakes'],
+        'content': '''
+<h2>What Z Offset Does</h2>
+<p>Z offset is the distance between your nozzle and the bed surface at the home position. Too far and the first layer does not bond to the bed. Too close and the filament gets squished flat, causing elephant foot, nozzle scraping, or a blocked first layer.</p>
+<p>Getting this right is the single most impactful calibration for print reliability.</p>
+
+<h2>Method 1: Paper Method (Baseline Setup)</h2>
+<ol>
+  <li>Heat bed and nozzle to print temperature for your material.</li>
+  <li>Home all axes (G28).</li>
+  <li>Disable steppers or move to Z=0 manually.</li>
+  <li>Slide a sheet of standard printer paper under the nozzle. You should feel slight resistance when pulling it - not so tight it tears, not so loose it moves freely.</li>
+  <li>Set this position as Z offset = 0 in your firmware, or note the current Z reading and set offset accordingly.</li>
+</ol>
+<div class="tip"><strong>Paper thickness is roughly 0.1mm.</strong> The paper method gives a starting point. Fine-tuning requires printing and adjusting.</div>
+
+<h2>Method 2: Live Adjust While Printing</h2>
+<ol>
+  <li>Set Z offset to the paper method baseline.</li>
+  <li>Start a first layer test print (a wide, single-layer square or grid works well).</li>
+  <li>While it prints, adjust Z offset in small steps using your printer display or OctoPrint/Klipper.</li>
+  <li>Stop when the first layer looks correct (see table below).</li>
+  <li>Save the offset to firmware (M500 on Marlin, or save_config in Klipper).</li>
+</ol>
+
+<h2>Reading the First Layer</h2>
+<table>
+  <tr><th>What you see</th><th>Adjustment</th></tr>
+  <tr><td>Lines not sticking, gaps between them</td><td>Lower Z offset by 0.05mm</td></tr>
+  <tr><td>Lines stick but gaps visible between them</td><td>Lower by 0.02-0.05mm</td></tr>
+  <tr><td>Lines merge slightly, smooth surface, rounded edges</td><td>Correct - stop here</td></tr>
+  <tr><td>Lines flattened and wide, no gaps, edges squared</td><td>Raise Z offset by 0.05mm</td></tr>
+  <tr><td>Lines merging and spreading beyond their path</td><td>Raise by 0.1mm - too close</td></tr>
+  <tr><td>Nozzle scraping / grinding sound</td><td>Raise immediately by 0.2mm</td></tr>
+</table>
+
+<h2>Common Mistakes</h2>
+<ul>
+  <li><strong>Setting offset cold:</strong> Always set Z offset at print temperature. Both nozzle and bed expand when heated.</li>
+  <li><strong>Dirty bed:</strong> Grease from handling will cause adhesion failure regardless of Z offset. Clean with IPA before calibrating.</li>
+  <li><strong>Not saving:</strong> On Marlin, run M500 after adjusting. On Klipper, run SAVE_CONFIG. Otherwise the offset resets on next power cycle.</li>
+  <li><strong>Re-levelling but not re-setting offset:</strong> If you adjust bed level screws, your Z offset changes too. Re-check after any bed adjustment.</li>
+</ul>
+''',
+    },
+    {
+        'id': 'add-brim-guide',
+        'title': 'How to Add a Brim in Any Slicer',
+        'tagline': 'Stop warping and improve bed adhesion with a brim.',
+        'tag': 'Slicing',
+        'icon': '🔲',
+        'covers': ['What a brim does', 'When to use one', 'Brim settings in OrcaSlicer', 'Brim in PrusaSlicer', 'Brim in Cura', 'Removing the brim cleanly'],
+        'content': '''
+<h2>What a Brim Does</h2>
+<p>A brim is a flat ring of material printed around the base of your model on the first layer. It increases the surface area in contact with the bed, which stops corners lifting during the print. It is removed after printing.</p>
+<p>A brim is different from a raft - a raft goes under the entire model and adds height. A brim stays flat and only extends outward from the edges.</p>
+
+<h2>When to Use a Brim</h2>
+<ul>
+  <li>Printing ABS, ASA, or any material that warps</li>
+  <li>Models with small footprints or tall, narrow shapes that may tip</li>
+  <li>First layer is sticking but corners are lifting mid-print</li>
+  <li>Printing on a surface with marginal adhesion for that material</li>
+</ul>
+<div class="tip"><strong>PLA rarely needs a brim</strong> on a clean PEI surface. Start without one and add if you see lifting.</div>
+
+<h2>OrcaSlicer / Bambu Studio</h2>
+<ol>
+  <li>Open print settings (the middle panel).</li>
+  <li>Under <strong>Support</strong> or <strong>Others</strong>, find <strong>Brim type</strong>.</li>
+  <li>Set to <strong>Outer brim only</strong> for most cases, or <strong>Inner and outer</strong> for very small footprints.</li>
+  <li>Set <strong>Brim width</strong> - 5-8mm for most materials, 8-12mm for ABS/ASA.</li>
+</ol>
+
+<h2>PrusaSlicer</h2>
+<ol>
+  <li>Go to <strong>Print Settings &rarr; Skirt and brim</strong>.</li>
+  <li>Check <strong>Brim</strong> and set <strong>Brim width</strong> in mm.</li>
+  <li>5-8mm is a good starting width. Increase for problematic materials.</li>
+</ol>
+
+<h2>Cura</h2>
+<ol>
+  <li>In <strong>Build Plate Adhesion</strong>, change <strong>Build Plate Adhesion Type</strong> to <strong>Brim</strong>.</li>
+  <li>Set <strong>Brim Width</strong> - typically 8mm as Cura's default, which is fine.</li>
+  <li><strong>Brim Line Count</strong> controls how many lines wide it is. More lines = more adhesion but more to remove.</li>
+</ol>
+
+<h2>Removing the Brim Cleanly</h2>
+<ul>
+  <li>Let the print cool fully before removing - warm PLA is flexible and tears rather than snapping cleanly.</li>
+  <li>Use flush cutters close to the model edge to clip the brim off in sections.</li>
+  <li>Any remaining nub can be removed with a craft knife or light sanding.</li>
+  <li>Set a small gap between brim and model (0.1-0.2mm) in slicer settings to make removal easier.</li>
+</ul>
+''',
+    },
+    {
+        'id': 'failed-print-recovery',
+        'title': 'What to Do When a Print Fails Mid-Way',
+        'tagline': 'Diagnose what went wrong and decide whether to restart or recover.',
+        'tag': 'Troubleshooting',
+        'icon': '⚠️',
+        'covers': ['Stop the print safely', 'Diagnose from the evidence', 'Layer shift', 'Detached from bed', 'Spaghetti / stringing mess', 'Clog', 'Whether to attempt recovery'],
+        'content': '''
+<h2>Step 1: Stop the Print Safely</h2>
+<ol>
+  <li>Cancel the print from your display or host software.</li>
+  <li>Let the hotend cool before touching anything - nozzles and heater blocks reach 200°C+.</li>
+  <li>Do not move the gantry manually while steppers are energised. Use the disable steppers option first.</li>
+  <li>Photograph the failed print before removing it - it helps with diagnosis.</li>
+</ol>
+
+<h2>Diagnosing from the Evidence</h2>
+
+<h3>Layer Shift</h3>
+<p>The print looks like it shifted sideways partway through, with the upper section offset from the lower.</p>
+<table>
+  <tr><th>Likely cause</th><th>Fix</th></tr>
+  <tr><td>Belt too loose</td><td>Tension X and Y belts until they ping when plucked</td></tr>
+  <tr><td>Speed too high</td><td>Reduce acceleration and speed by 20%</td></tr>
+  <tr><td>Print knocked by nozzle</td><td>Check for warping on the base - fix bed adhesion first</td></tr>
+  <tr><td>Stepper motor overheating</td><td>Check stepper driver cooling, reduce current slightly</td></tr>
+</table>
+
+<h3>Detached from Bed</h3>
+<p>The print is lying on its side or has been dragged around by the nozzle.</p>
+<table>
+  <tr><th>Likely cause</th><th>Fix</th></tr>
+  <tr><td>Z offset too high</td><td>Lower Z offset by 0.05-0.1mm</td></tr>
+  <tr><td>Dirty bed</td><td>Clean with IPA thoroughly</td></tr>
+  <tr><td>Warping material without enclosure</td><td>Add brim, check bed temp, enclose for ABS/ASA</td></tr>
+  <tr><td>Bed temp dropped mid-print</td><td>Check temperature graph for bed dropout</td></tr>
+</table>
+
+<h3>Spaghetti / Complete Mess</h3>
+<p>A bird's nest of loose filament filling the enclosure or bed surface.</p>
+<ul>
+  <li>Usually caused by the print detaching and the nozzle continuing to extrude into thin air.</li>
+  <li>Fix the bed adhesion issue, clean the surface thoroughly, and restart.</li>
+  <li>Check for partial clogs that may have contributed to under-extrusion on early layers.</li>
+</ul>
+
+<h3>Extruder Clicking / Clog</h3>
+<p>The extruder motor clicks or skips, and the print shows gaps or stops extruding.</p>
+<ul>
+  <li>Perform a cold pull to clear the nozzle before printing again.</li>
+  <li>Check that the PTFE tube is seated fully against the nozzle with no gap.</li>
+  <li>Ensure filament is dry - wet filament can partially block the nozzle.</li>
+</ul>
+
+<h2>Should You Attempt a Recovery?</h2>
+<p>Print recovery (resuming a print after a failure) is possible but unreliable. It is worth attempting only if:</p>
+<ul>
+  <li>The print failed very close to completion (more than 80% done)</li>
+  <li>The cause of failure is understood and fixed</li>
+  <li>The base is still firmly attached to the bed</li>
+</ul>
+<p>For most failures below 70% completion, restarting is faster and less frustrating than attempting a recovery.</p>
+<div class="warn"><strong>Before reprinting:</strong> Fix the root cause. Printing again without understanding the failure will produce the same result.</div>
+''',
+    },
+    {
+        'id': 'firmware-update-guide',
+        'title': 'How to Update Your 3D Printer Firmware',
+        'tagline': 'Klipper, Marlin, and Bambu Lab firmware updates explained.',
+        'tag': 'Maintenance',
+        'icon': '💾',
+        'covers': ['Why update firmware', 'Marlin update process', 'Klipper update via Mainsail/Fluidd', 'Bambu Lab firmware update', 'What to re-calibrate after updating'],
+        'content': '''
+<h2>Why Update Firmware?</h2>
+<p>Firmware updates fix bugs, improve motion planning, add new features, and sometimes resolve persistent print quality issues. It is worth updating when a new release fixes a known issue with your printer, or when you are troubleshooting unexplained problems.</p>
+<div class="warn"><strong>Always note your current settings before updating.</strong> E-steps, PID tuning values, and Z offset can reset to defaults. Write them down or export the EEPROM before proceeding.</div>
+
+<h2>Marlin Firmware</h2>
+<h3>Stock Printers (Ender 3, Artillery, Anycubic, etc.)</h3>
+<ol>
+  <li>Find the correct pre-compiled firmware for your exact printer model and board version. The manufacturer website, TH3D Studio, or the Marlin GitHub are common sources.</li>
+  <li>Copy the firmware .bin file to a microSD card. The file must be named differently from the last installed firmware (rename it if needed).</li>
+  <li>Power the printer off. Insert the SD card.</li>
+  <li>Power on. The printer screen will go blank for 5-30 seconds while flashing. Do not power off during this time.</li>
+  <li>When the printer boots normally, the update is complete.</li>
+</ol>
+<div class="tip"><strong>After updating Marlin:</strong> Run M502 (load factory defaults) then M500 (save). Re-enter your E-steps (M92 E[value] then M500), PID values, and Z offset.</div>
+
+<h3>Compiling Your Own Marlin</h3>
+<ol>
+  <li>Install VSCode and the PlatformIO extension.</li>
+  <li>Download Marlin source from marlinfw.org and your printer manufacturer config files.</li>
+  <li>Copy the config files into the Marlin source.</li>
+  <li>Open in PlatformIO, select the correct environment for your board, and click Build.</li>
+  <li>Flash the resulting .bin file as above.</li>
+</ol>
+
+<h2>Klipper (via Mainsail or Fluidd)</h2>
+<ol>
+  <li>SSH into your Raspberry Pi or open the Mainsail/Fluidd terminal.</li>
+  <li>Run: <code>cd ~/klipper && git pull</code></li>
+  <li>Run the menuconfig: <code>make menuconfig</code> - verify settings match your board, then exit and save.</li>
+  <li>Build the firmware: <code>make</code></li>
+  <li>Flash to printer: method depends on board. Common: <code>make flash FLASH_DEVICE=/dev/serial/by-id/[your-device]</code></li>
+  <li>Restart Klipper: <code>sudo systemctl restart klipper</code></li>
+</ol>
+<div class="tip"><strong>KIAUH</strong> (Klipper Install And Update Helper) simplifies this process significantly. Run it via SSH and select Update from the menu.</div>
+
+<h2>Bambu Lab Firmware</h2>
+<ol>
+  <li>Open Bambu Studio or the printer touchscreen.</li>
+  <li>If an update is available, a notification appears. Select Update.</li>
+  <li>The printer downloads and installs the update automatically over Wi-Fi.</li>
+  <li>The printer reboots when complete.</li>
+</ol>
+<p>Bambu Lab firmware updates are self-contained and do not require re-calibration in most cases. Run a quick first layer test after any major update.</p>
+
+<h2>What to Re-Calibrate After Updating</h2>
+<table>
+  <tr><th>What changed</th><th>What to re-calibrate</th></tr>
+  <tr><td>Any Marlin update</td><td>E-steps, PID values, Z offset (re-enter from notes)</td></tr>
+  <tr><td>Klipper update</td><td>Run PROBE_CALIBRATE and BED_MESH_CALIBRATE again if prompted</td></tr>
+  <tr><td>Pressure advance or input shaper added</td><td>Run the calibration procedures for those features</td></tr>
+  <tr><td>Bambu update</td><td>Re-run first layer calibration if quality changes</td></tr>
+</table>
+''',
+    },
+]
+
+
 @app.route('/guides')
 def guides():
     return render_template('guides.html', user=get_current_user(), guides=QUICK_GUIDES)
@@ -1916,6 +2405,8 @@ STL_FILES = {
     'temp-tower':       'temp_tower.stl',
     'flow-rate-test':   'flow_rate_test.stl',
     'ironing-test':     'ironing_test.stl',
+    'tolerance-test':   'tolerance_test.stl',
+    'elephant-foot-test': 'elephant_foot_test.stl',
 }
 
 @app.route('/download/stl/<slug>')

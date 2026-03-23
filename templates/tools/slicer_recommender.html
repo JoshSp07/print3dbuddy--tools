@@ -20,14 +20,15 @@
     <label for="printer_brand">What printer do you have?</label>
     <select id="printer_brand" name="printer_brand" required>
       <option value="">-- Select --</option>
-      <option value="bambu"    {% if result and result.printer_brand == 'bambu'    %}selected{% endif %}>Bambu Lab (A1, P1, X1 series)</option>
-      <option value="prusa"    {% if result and result.printer_brand == 'prusa'    %}selected{% endif %}>Prusa (MK3, MK4, Mini, XL)</option>
-      <option value="creality" {% if result and result.printer_brand == 'creality' %}selected{% endif %}>Creality (Ender 3, CR-10, K1, etc.)</option>
-      <option value="elegoo"   {% if result and result.printer_brand == 'elegoo'   %}selected{% endif %}>Elegoo (Neptune, Mars series)</option>
-      <option value="anycubic" {% if result and result.printer_brand == 'anycubic' %}selected{% endif %}>Anycubic (Kobra, Vyper, etc.)</option>
-      <option value="artillery" {% if result and result.printer_brand == 'artillery' %}selected{% endif %}>Artillery (Sidewinder, Genius)</option>
-      <option value="voron"    {% if result and result.printer_brand == 'voron'    %}selected{% endif %}>Voron (2.4, Trident, V0, etc.)</option>
-      <option value="other"    {% if result and result.printer_brand == 'other'    %}selected{% endif %}>Other / Not sure</option>
+      {% set pb = user.printer_brand %}
+      <option value="bambu"    {% if (result and result.printer_brand == 'bambu')    or (not result and pb == 'bambu')    %}selected{% endif %}>Bambu Lab (A1, P1, X1 series)</option>
+      <option value="prusa"    {% if (result and result.printer_brand == 'prusa')    or (not result and pb == 'prusa')    %}selected{% endif %}>Prusa (MK3, MK4, Mini, XL)</option>
+      <option value="creality" {% if (result and result.printer_brand == 'creality') or (not result and pb == 'creality') %}selected{% endif %}>Creality (Ender 3, CR-10, K1, etc.)</option>
+      <option value="elegoo"   {% if (result and result.printer_brand == 'elegoo')   or (not result and pb == 'elegoo')   %}selected{% endif %}>Elegoo (Neptune, Mars series)</option>
+      <option value="anycubic" {% if (result and result.printer_brand == 'anycubic') or (not result and pb == 'anycubic') %}selected{% endif %}>Anycubic (Kobra, Vyper, etc.)</option>
+      <option value="artillery" {% if (result and result.printer_brand == 'artillery') or (not result and pb == 'artillery') %}selected{% endif %}>Artillery (Sidewinder, Genius)</option>
+      <option value="voron"    {% if (result and result.printer_brand == 'voron')    or (not result and pb == 'voron')    %}selected{% endif %}>Voron (2.4, Trident, V0, etc.)</option>
+      <option value="other"    {% if (result and result.printer_brand == 'other')    or (not result and pb == 'other')    %}selected{% endif %}>Other / Not sure</option>
     </select>
 
     <label for="experience">How experienced are you?</label>

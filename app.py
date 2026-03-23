@@ -108,6 +108,16 @@ def init_db():
             stripe_subscription_id TEXT,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
         )''')
+        for col_sql in [
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS printer_brand TEXT",
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS default_filament TEXT",
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS drive_type TEXT",
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS nozzle_size TEXT",
+        ]:
+            try:
+                cur.execute(col_sql)
+            except Exception:
+                pass
         conn.commit()
         conn.close()
     else:
@@ -123,10 +133,17 @@ def init_db():
             stripe_subscription_id TEXT,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
         )''')
-        try:
-            db.execute('ALTER TABLE users ADD COLUMN payment_type TEXT DEFAULT "free"')
-        except Exception:
-            pass
+        for col in [
+            'ALTER TABLE users ADD COLUMN payment_type TEXT DEFAULT "free"',
+            'ALTER TABLE users ADD COLUMN printer_brand TEXT',
+            'ALTER TABLE users ADD COLUMN default_filament TEXT',
+            'ALTER TABLE users ADD COLUMN drive_type TEXT',
+            'ALTER TABLE users ADD COLUMN nozzle_size TEXT',
+        ]:
+            try:
+                db.execute(col)
+            except Exception:
+                pass
         db.commit()
         db.close()
 
@@ -202,6 +219,24 @@ def index():
 @app.route('/dashboard')
 def dashboard():
     return render_template('dashboard.html', user=get_current_user())
+
+@app.route('/save-profile', methods=['POST'])
+@login_required
+def save_profile():
+    user = get_current_user()
+    db_execute(
+        'UPDATE users SET printer_brand=%s, default_filament=%s, drive_type=%s, nozzle_size=%s WHERE id=%s',
+        (
+            request.form.get('printer_brand') or None,
+            request.form.get('default_filament') or None,
+            request.form.get('drive_type') or None,
+            request.form.get('nozzle_size') or None,
+            user['id'],
+        )
+    )
+    flash('Printer profile saved.', 'success')
+    return redirect(url_for('dashboard'))
+
 
 @app.route('/account')
 @login_required
@@ -383,7 +418,7 @@ def filament_cost():
 def print_settings():
     user = get_current_user()
     result = None
-    selected_material = None
+    selected_material = user['default_filament'] if user['default_filament'] else None
     if request.method == 'POST':
         if not can_use_tool(user):
             flash('You have used all your free uses. Upgrade to continue.', 'warning')

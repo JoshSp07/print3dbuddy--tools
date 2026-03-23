@@ -16,7 +16,7 @@
 </div>
 
 {% else %}
-<div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; max-width:640px;">
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; max-width:640px; margin-bottom:36px;">
 
   <div style="background:#fff; border:1px solid var(--border); border-radius:10px; padding:24px;">
     <p style="font-size:0.78rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--muted); margin-bottom:10px;">Account</p>
@@ -35,6 +35,70 @@
     {% endif %}
   </div>
 
+</div>
+
+<div style="max-width:640px;">
+  <h2 style="font-size:1.1rem; font-weight:700; margin-bottom:4px;">Your printer</h2>
+  <p style="color:var(--muted); font-size:0.88rem; margin-bottom:20px;">Set this once and the tools will pre-fill your setup automatically.</p>
+
+  <form method="POST" action="/save-profile">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+
+      <div>
+        <label style="font-size:0.85rem; font-weight:600; display:block; margin-bottom:6px;">Printer brand</label>
+        <select name="printer_brand" style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:7px; font-size:0.93rem;">
+          <option value="">-- Not set --</option>
+          <option value="bambu"     {% if user.printer_brand == 'bambu'     %}selected{% endif %}>Bambu Lab</option>
+          <option value="prusa"     {% if user.printer_brand == 'prusa'     %}selected{% endif %}>Prusa</option>
+          <option value="creality"  {% if user.printer_brand == 'creality'  %}selected{% endif %}>Creality</option>
+          <option value="elegoo"    {% if user.printer_brand == 'elegoo'    %}selected{% endif %}>Elegoo</option>
+          <option value="anycubic"  {% if user.printer_brand == 'anycubic'  %}selected{% endif %}>Anycubic</option>
+          <option value="artillery" {% if user.printer_brand == 'artillery' %}selected{% endif %}>Artillery</option>
+          <option value="voron"     {% if user.printer_brand == 'voron'     %}selected{% endif %}>Voron</option>
+          <option value="other"     {% if user.printer_brand == 'other'     %}selected{% endif %}>Other</option>
+        </select>
+      </div>
+
+      <div>
+        <label style="font-size:0.85rem; font-weight:600; display:block; margin-bottom:6px;">Default filament</label>
+        <select name="default_filament" style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:7px; font-size:0.93rem;">
+          <option value="">-- Not set --</option>
+          <option value="PLA"     {% if user.default_filament == 'PLA'     %}selected{% endif %}>PLA</option>
+          <option value="PLA+"    {% if user.default_filament == 'PLA+'    %}selected{% endif %}>PLA+</option>
+          <option value="PETG"    {% if user.default_filament == 'PETG'    %}selected{% endif %}>PETG</option>
+          <option value="ABS"     {% if user.default_filament == 'ABS'     %}selected{% endif %}>ABS</option>
+          <option value="ASA"     {% if user.default_filament == 'ASA'     %}selected{% endif %}>ASA</option>
+          <option value="TPU 95A" {% if user.default_filament == 'TPU 95A' %}selected{% endif %}>TPU</option>
+        </select>
+      </div>
+
+      <div>
+        <label style="font-size:0.85rem; font-weight:600; display:block; margin-bottom:6px;">Extruder type</label>
+        <select name="drive_type" style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:7px; font-size:0.93rem;">
+          <option value="">-- Not set --</option>
+          <option value="direct" {% if user.drive_type == 'direct' %}selected{% endif %}>Direct drive</option>
+          <option value="bowden" {% if user.drive_type == 'bowden' %}selected{% endif %}>Bowden</option>
+        </select>
+      </div>
+
+      <div>
+        <label style="font-size:0.85rem; font-weight:600; display:block; margin-bottom:6px;">Nozzle size</label>
+        <select name="nozzle_size" style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:7px; font-size:0.93rem;">
+          <option value="">-- Not set --</option>
+          <option value="0.2mm" {% if user.nozzle_size == '0.2mm' %}selected{% endif %}>0.2mm</option>
+          <option value="0.3mm" {% if user.nozzle_size == '0.3mm' %}selected{% endif %}>0.3mm</option>
+          <option value="0.4mm" {% if user.nozzle_size == '0.4mm' %}selected{% endif %}>0.4mm (standard)</option>
+          <option value="0.5mm" {% if user.nozzle_size == '0.5mm' %}selected{% endif %}>0.5mm</option>
+          <option value="0.6mm" {% if user.nozzle_size == '0.6mm' %}selected{% endif %}>0.6mm</option>
+          <option value="0.8mm" {% if user.nozzle_size == '0.8mm' %}selected{% endif %}>0.8mm</option>
+          <option value="1.0mm" {% if user.nozzle_size == '1.0mm' %}selected{% endif %}>1.0mm</option>
+        </select>
+      </div>
+
+    </div>
+
+    <button type="submit" class="btn" style="margin-top:20px;">Save profile</button>
+  </form>
 </div>
 {% endif %}
 

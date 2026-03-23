@@ -29,10 +29,11 @@
     <label for="material">Filament material</label>
     <select id="material" name="material" required>
       <option value="">-- Select material --</option>
-      <option value="pla"   {% if sel.get('material') == 'pla' or not sel %}selected{% endif %}>PLA / PLA+</option>
-      <option value="petg"  {% if sel.get('material') == 'petg' %}selected{% endif %}>PETG</option>
-      <option value="abs"   {% if sel.get('material') == 'abs' %}selected{% endif %}>ABS / ASA</option>
-      <option value="tpu"   {% if sel.get('material') == 'tpu' %}selected{% endif %}>TPU / Flexible</option>
+      {% set profile_mat = 'petg' if user.default_filament == 'PETG' else ('abs' if user.default_filament in ('ABS','ASA') else ('tpu' if user.default_filament and user.default_filament.startswith('TPU') else 'pla')) %}
+      <option value="pla"   {% if sel.get('material') == 'pla'  or (not sel and profile_mat == 'pla')  %}selected{% endif %}>PLA / PLA+</option>
+      <option value="petg"  {% if sel.get('material') == 'petg' or (not sel and profile_mat == 'petg') %}selected{% endif %}>PETG</option>
+      <option value="abs"   {% if sel.get('material') == 'abs'  or (not sel and profile_mat == 'abs')  %}selected{% endif %}>ABS / ASA</option>
+      <option value="tpu"   {% if sel.get('material') == 'tpu'  or (not sel and profile_mat == 'tpu')  %}selected{% endif %}>TPU / Flexible</option>
     </select>
 
     <button type="submit" class="btn">Get recommendation</button>

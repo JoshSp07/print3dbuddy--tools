@@ -29,20 +29,21 @@
       <div>
         <label for="extruder">Extruder type</label>
         <select id="extruder" name="extruder">
-          <option value="direct" {% if result and result.extruder == 'direct' %}selected{% endif %}>Direct drive (motor on toolhead)</option>
-          <option value="bowden" {% if result and result.extruder == 'bowden' %}selected{% endif %}>Bowden (motor on frame)</option>
+          <option value="direct" {% if (result and result.extruder == 'direct') or (not result and user.drive_type == 'direct') or (not result and not user.drive_type) %}selected{% endif %}>Direct drive (motor on toolhead)</option>
+          <option value="bowden" {% if (result and result.extruder == 'bowden') or (not result and user.drive_type == 'bowden') %}selected{% endif %}>Bowden (motor on frame)</option>
         </select>
       </div>
       <div>
         <label for="nozzle">Nozzle diameter</label>
         <select id="nozzle" name="nozzle">
-          <option value="0.2mm" {% if result and result.nozzle == '0.2mm' %}selected{% endif %}>0.2mm - detail</option>
-          <option value="0.3mm" {% if result and result.nozzle == '0.3mm' %}selected{% endif %}>0.3mm</option>
-          <option value="0.4mm" {% if not result or result.nozzle == '0.4mm' %}selected{% endif %}>0.4mm - standard</option>
-          <option value="0.5mm" {% if result and result.nozzle == '0.5mm' %}selected{% endif %}>0.5mm</option>
-          <option value="0.6mm" {% if result and result.nozzle == '0.6mm' %}selected{% endif %}>0.6mm</option>
-          <option value="0.8mm" {% if result and result.nozzle == '0.8mm' %}selected{% endif %}>0.8mm</option>
-          <option value="1.0mm" {% if result and result.nozzle == '1.0mm' %}selected{% endif %}>1.0mm - draft/large</option>
+          {% set default_nozzle = user.nozzle_size if user.nozzle_size else '0.4mm' %}
+          <option value="0.2mm" {% if (result and result.nozzle == '0.2mm') or (not result and default_nozzle == '0.2mm') %}selected{% endif %}>0.2mm - detail</option>
+          <option value="0.3mm" {% if (result and result.nozzle == '0.3mm') or (not result and default_nozzle == '0.3mm') %}selected{% endif %}>0.3mm</option>
+          <option value="0.4mm" {% if (result and result.nozzle == '0.4mm') or (not result and default_nozzle == '0.4mm') %}selected{% endif %}>0.4mm - standard</option>
+          <option value="0.5mm" {% if (result and result.nozzle == '0.5mm') or (not result and default_nozzle == '0.5mm') %}selected{% endif %}>0.5mm</option>
+          <option value="0.6mm" {% if (result and result.nozzle == '0.6mm') or (not result and default_nozzle == '0.6mm') %}selected{% endif %}>0.6mm</option>
+          <option value="0.8mm" {% if (result and result.nozzle == '0.8mm') or (not result and default_nozzle == '0.8mm') %}selected{% endif %}>0.8mm</option>
+          <option value="1.0mm" {% if (result and result.nozzle == '1.0mm') or (not result and default_nozzle == '1.0mm') %}selected{% endif %}>1.0mm - draft/large</option>
         </select>
       </div>
     </div>

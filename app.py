@@ -2461,6 +2461,9 @@ def sitemap():
         '/', '/test-prints', '/guides', '/register', '/login', '/upgrade',
         '/tools/filament-cost', '/tools/print-settings',
         '/tools/slicer-recommender', '/tools/stl-estimator',
+        '/tools/nozzle-recommender', '/tools/infill-recommender',
+        '/tools/retraction-calculator', '/tools/temp-tower-helper',
+        '/tools/print-time-estimator', '/tools/filament-converter',
     ]
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
     xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'

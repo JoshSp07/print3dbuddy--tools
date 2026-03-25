@@ -2449,7 +2449,9 @@ def robots():
         "Disallow: /download/\n"
         "Sitemap: https://tools.print3dbuddy.com/sitemap.xml\n"
     )
-    return Response(content, mimetype='text/plain')
+    resp = Response(content, mimetype='text/plain')
+    resp.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate'
+    return resp
 
 
 @app.route('/sitemap.xml')

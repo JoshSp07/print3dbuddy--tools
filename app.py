@@ -35,7 +35,7 @@ STRIPE_WEBHOOK_SECRET  = os.environ.get('STRIPE_WEBHOOK_SECRET', '')
 DOMAIN = os.environ.get('DOMAIN', 'http://localhost:5000')
 
 FREE_USES = 3
-DB_PATH = 'users.db'
+DB_PATH = os.environ.get('DB_PATH', '/data/users.db')
 
 # ── Database ──────────────────────────────────────────────────────────────────
 
